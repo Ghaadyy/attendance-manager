@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,12 +18,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddControllers().AddXmlSerializerFormatters();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson()
+    .AddXmlSerializerFormatters();
+
 builder.Services.Configure<MvcOptions>(opts =>
 {
     opts.RespectBrowserAcceptHeader = true;
     opts.ReturnHttpNotAcceptable = true;
 });
+
+builder.Services.Configure<MvcNewtonsoftJsonOptions>(options =>
+    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore);
 
 // Configure authentication & JWT
 builder.Services

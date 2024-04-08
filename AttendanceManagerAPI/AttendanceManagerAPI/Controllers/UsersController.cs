@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AttendanceManagerAPI.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using System.Data;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -111,13 +112,16 @@ public class UsersController : ControllerBase
 
     [HttpPatch("{userId}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<ActionResult<User>> Update(int userId, [FromBody] PartialUser partialUser)
+    public async Task<ActionResult<User>> Update(int userId, [FromBody] JsonPatchDocument<User> patchDoc)
     {
-        var user = _userRepository.GetUserById(userId);
+        User? user = _userRepository.GetUserById(userId);
 
-        if (user is null) return BadRequest("User does not exist.");
+        if (user is null) return BadRequest("Invalid user id.");
 
-        await _userRepository.UpdateUser(user, partialUser);
+        patchDoc.ApplyTo(user);
+
+        // TODO: Check for validation issues, since using JsonPatchDocument does not check validation on User.
+        await _userRepository.UpdateUser(user, patchDoc);
 
         return Ok(user);
     }

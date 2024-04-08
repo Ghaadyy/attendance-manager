@@ -17,12 +17,14 @@
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.17" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.17" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Controllers\" />
 		<None Remove="Models\" />
 		<None Remove="Models\Session\" />
 		<None Remove="Models\Course\" />
+		<None Remove="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Controllers\" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AttendanceManagerAPI.Models;
 
@@ -14,5 +15,5 @@ public interface IUserRepository
     Task<Role?> AddRoleToUser(string role, int userId);
     bool IsValidEmail(string email);
     bool IsValidUserName(string userName);
-    Task UpdateUser(User user, PartialUser partialUser);
+    Task UpdateUser(User user, JsonPatchDocument<User> patchDoc);
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace AttendanceManagerAPI.Models;
 
@@ -48,22 +49,22 @@ public class UserRepository : IUserRepository
 
     public async Task<Role?> AddRoleToUser(string role, int userId)
     {
-		var userRole = (from r in context.Roles
-						where r.Name == role
-						select r).FirstOrDefault();
+        var userRole = (from r in context.Roles
+                        where r.Name == role
+                        select r).FirstOrDefault();
 
         if (userRole == null) return null;
 
-		context.UserRoles.Add(new UserRole
-		{
-			UserId = userId,
-			RoleId = userRole.Id
-		});
+        context.UserRoles.Add(new UserRole
+        {
+            UserId = userId,
+            RoleId = userRole.Id
+        });
 
         await context.SaveChangesAsync();
 
         return userRole;
-	}
+    }
 
     public User? AuthenticateUser(string email, string password)
     {
@@ -99,17 +100,9 @@ public class UserRepository : IUserRepository
                 select u).FirstOrDefault() is null;
     }
 
-    public async Task UpdateUser(User user, PartialUser partialUser)
+    public async Task UpdateUser(User user, JsonPatchDocument<User> patchDoc)
     {
-        user.FirstName = partialUser.FirstName ?? user.FirstName;
-        user.LastName = partialUser.LastName ?? user.LastName;
-        user.Email = partialUser.Email ?? user.Email;
-        user.BirthDate = partialUser.BirthDate ?? user.BirthDate;
-        user.BloodType = partialUser.BloodType ?? user.BloodType;
-        user.Password = partialUser.Password ?? user.Password;
-        user.PhoneNumber = partialUser.PhoneNumber ?? user.PhoneNumber;
-        user.UserName = partialUser.UserName ?? user.UserName;
-
+        patchDoc.ApplyTo(user);
         await context.SaveChangesAsync();
     }
 }
