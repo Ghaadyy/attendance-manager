@@ -120,7 +120,13 @@ public class UsersController : ControllerBase
 
         patchDoc.ApplyTo(user);
 
-        // TODO: Check for validation issues, since using JsonPatchDocument does not check validation on User.
+        // Validate the user, because when passing JsonPatchDocument,
+        // the underlying user object was not properly validated
+        TryValidateModel(user);
+
+        if (!ModelState.IsValid)
+            return BadRequest("Invalid parameters");
+
         await _userRepository.UpdateUser(user, patchDoc);
 
         return Ok(user);

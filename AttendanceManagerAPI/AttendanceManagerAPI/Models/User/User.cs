@@ -45,6 +45,7 @@ public class User
     public required string Password { get; set; }
 
     [Column("blood_type")]
+    [MinLength(1)]
     [RegularExpression("(AB|[ABO])[+-]?", ErrorMessage = "Please enter a valid blood type.")]
     public string? BloodType { get; set; }
 }
