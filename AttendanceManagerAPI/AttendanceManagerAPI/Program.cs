@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using AttendanceManagerAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -15,6 +16,13 @@ builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddControllers().AddXmlSerializerFormatters();
+builder.Services.Configure<MvcOptions>(opts =>
+{
+    opts.RespectBrowserAcceptHeader = true;
+    opts.ReturnHttpNotAcceptable = true;
+});
 
 // Configure authentication & JWT
 builder.Services
