@@ -11,6 +11,7 @@ public interface IUserRepository
     List<User> GetAllUsers();
     Task AddUser(User user);
     Task DeleteUser(User user);
+    Task<Role?> AddRoleToUser(string role, int userId);
     bool IsValidEmail(string email);
     bool IsValidUserName(string userName);
     Task UpdateUser(User user, PartialUser partialUser);

@@ -46,6 +46,25 @@ public class UserRepository : IUserRepository
         await context.SaveChangesAsync();
     }
 
+    public async Task<Role?> AddRoleToUser(string role, int userId)
+    {
+		var userRole = (from r in context.Roles
+						where r.Name == role
+						select r).FirstOrDefault();
+
+        if (userRole == null) return null;
+
+		context.UserRoles.Add(new UserRole
+		{
+			UserId = userId,
+			RoleId = userRole.Id
+		});
+
+        await context.SaveChangesAsync();
+
+        return userRole;
+	}
+
     public User? AuthenticateUser(string email, string password)
     {
         var user = (from u in context.Users

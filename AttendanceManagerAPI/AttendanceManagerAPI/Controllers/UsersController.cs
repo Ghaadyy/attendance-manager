@@ -7,6 +7,7 @@ using AttendanceManagerAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace AttendanceManagerAPI.Controllers;
 
@@ -14,13 +15,13 @@ namespace AttendanceManagerAPI.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly AttendanceManagerContext context;
+    //private readonly AttendanceManagerContext context;
     private readonly TokenGenerator generator;
     private readonly IUserRepository _userRepository;
 
-    public UsersController(AttendanceManagerContext context, TokenGenerator generator, IUserRepository userRepository)
+    public UsersController(TokenGenerator generator, IUserRepository userRepository)
     {
-        this.context = context;
+        //this.context = context;
         this.generator = generator;
         _userRepository = userRepository;
     }
@@ -60,7 +61,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost("signup")]
-    public async Task<ActionResult> SignUp([FromBody] SignUpModel model)
+    public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
     {
         if (!_userRepository.IsValidUserName(model.UserName))
             return BadRequest("User with the same username already exists");
@@ -79,17 +80,22 @@ public class UsersController : ControllerBase
 
         await _userRepository.AddUser(user);
 
-        var userRole = (from r in context.Roles
-                        where r.Name == "User"
-                        select r).First();
+        //var userRole = (from r in context.Roles
+        //                where r.Name == "User"
+        //                select r).First();
 
-        context.UserRoles.Add(new UserRole
-        {
-            UserId = user.Id,
-            RoleId = userRole.Id
-        });
+        //context.UserRoles.Add(new UserRole
+        //{
+        //    UserId = user.Id,
+        //    RoleId = userRole.Id
+        //});
 
-        await context.SaveChangesAsync();
+        //await context.SaveChangesAsync();
+
+        var userRole = _userRepository.AddRoleToUser("User", user.Id).Result;
+
+        //We have to see what to do in this situation, but for now this works
+        if (userRole is null) return StatusCode(500, "Internal Server Error - User created with no role");
 
         var token = generator.GenerateJWTToken(user, new List<Role>
         {
@@ -130,19 +136,23 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("{userId}/{roleName}")]
-    public async Task<ActionResult> AddRole(int userId, string roleName)
+    public async Task<IActionResult> AddRole(int userId, string roleName)
     {
-        var role = context.Roles.Where(r => r.Name == roleName).FirstOrDefault();
+        //var role = context.Roles.Where(r => r.Name == roleName).FirstOrDefault();
+
+        //if (role is null) return BadRequest();
+
+        //context.UserRoles.Add(new UserRole
+        //{
+        //    UserId = userId,
+        //    RoleId = role.Id
+        //});
+
+        //await context.SaveChangesAsync();
+
+        var role = await _userRepository.AddRoleToUser(roleName, userId);
 
         if (role is null) return BadRequest();
-
-        context.UserRoles.Add(new UserRole
-        {
-            UserId = userId,
-            RoleId = role.Id
-        });
-
-        await context.SaveChangesAsync();
 
         return Ok();
     }
