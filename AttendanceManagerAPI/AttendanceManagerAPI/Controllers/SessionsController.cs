@@ -20,15 +20,6 @@ public class SessionsController : Controller
         _sessionRepository = sessionRepository;
     }
 
-    [HttpGet("time")]
-    public ActionResult GetTime()
-    {
-        return Ok(new
-        {
-            DateTime = DateTime.Now
-        });
-    }
-
     [HttpGet]
     public ActionResult<IEnumerable<Session>> Get()
     {
