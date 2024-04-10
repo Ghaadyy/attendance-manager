@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using System;
 
 namespace AttendanceManagerAPI.Models;
 
@@ -86,6 +87,17 @@ public class CourseRepository : ICourseRepository
                        select teacher;
 
         return teachers;
+    }
+
+    public bool CheckIfStudentEnrolled(int courseId, int studentId)
+    {
+        IEnumerable<User> students = GetStudents(courseId);
+        foreach(User student in students)
+        {
+            if (student.Id == studentId) return false;
+        }
+
+        return true;
     }
 }
 
