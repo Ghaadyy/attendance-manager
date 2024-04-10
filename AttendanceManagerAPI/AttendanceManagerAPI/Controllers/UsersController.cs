@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Security.Claims;
 using System.Numerics;
+using BCrypt.Net;
 
 namespace AttendanceManagerAPI.Controllers;
 
@@ -18,13 +19,11 @@ namespace AttendanceManagerAPI.Controllers;
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
-    //private readonly AttendanceManagerContext context;
     private readonly TokenGenerator generator;
     private readonly IUserRepository _userRepository;
 
     public UsersController(TokenGenerator generator, IUserRepository userRepository)
     {
-        //this.context = context;
         this.generator = generator;
         _userRepository = userRepository;
     }
@@ -49,31 +48,34 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-	[HttpGet("userinfo")]
-	[Authorize]
-	public IActionResult GetUserInfo()
-	{
+    [HttpGet("me")]
+    [Authorize]
+    public IActionResult GetUserInfo()
+    {
         var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         int userId;
 
-		if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId))
-		{
-			return BadRequest("User ID missing from token");
-		}
+        if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId))
+        {
+            return BadRequest("User ID missing from token");
+        }
 
         User? user = _userRepository.GetUserById(userId);
 
         if (user is null) return BadRequest("User not found");
 
-		return Ok(user);
-	}
+        return Ok(user);
+    }
 
-	[HttpPost("login")]
+    [HttpPost("login")]
     public ActionResult Login([FromBody] LoginModel model)
     {
-        var user = _userRepository.AuthenticateUser(model.Email, model.Password);
+        var user = _userRepository.GetByEmail(model.Email);
 
-        if (user is null) return BadRequest("Invalid credentials.");
+        if (user is null) return BadRequest("Invalid email.");
+
+        if (!BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
+            return BadRequest("Invalid password.");
 
         var roles = _userRepository.GetUserRoles(user);
 
@@ -91,32 +93,23 @@ public class UsersController : ControllerBase
         if (!_userRepository.IsValidEmail(model.Email))
             return BadRequest("User with the same email already exists");
 
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
         var user = new User
         {
             FirstName = model.FirstName,
             LastName = model.LastName,
             Email = model.Email,
             UserName = model.UserName,
-            Password = model.Password
+            Password = hashedPassword,
         };
 
         await _userRepository.AddUser(user);
 
-        //var userRole = (from r in context.Roles
-        //                where r.Name == "User"
-        //                select r).First();
-
-        //context.UserRoles.Add(new UserRole
-        //{
-        //    UserId = user.Id,
-        //    RoleId = userRole.Id
-        //});
-
-        //await context.SaveChangesAsync();
-
         var userRole = _userRepository.AddRoleToUser("User", user.Id).Result;
 
         //We have to see what to do in this situation, but for now this works
+        // TODO: Create a trigger on the database level to automatically add users to a default group called "Users"
         if (userRole is null) return StatusCode(500, "Internal Server Error - User created with no role");
 
         var token = generator.GenerateJWTToken(user, new List<Role>
@@ -124,11 +117,7 @@ public class UsersController : ControllerBase
             userRole
         });
 
-        return Ok(new
-        {
-            token,
-            user
-        });
+        return Ok(new { token });
     }
 
     [HttpPatch("{userId}")]
@@ -167,20 +156,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpPatch("{userId}/{roleName}")]
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> AddRole(int userId, string roleName)
     {
-        //var role = context.Roles.Where(r => r.Name == roleName).FirstOrDefault();
-
-        //if (role is null) return BadRequest();
-
-        //context.UserRoles.Add(new UserRole
-        //{
-        //    UserId = userId,
-        //    RoleId = role.Id
-        //});
-
-        //await context.SaveChangesAsync();
-
         var role = await _userRepository.AddRoleToUser(roleName, userId);
 
         if (role is null) return BadRequest();

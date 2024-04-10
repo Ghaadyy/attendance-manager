@@ -35,6 +35,15 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public User? GetByEmail(string email)
+    {
+        var user = (from u in context.Users
+                    where u.Email == email
+                    select u).FirstOrDefault();
+
+        return user;
+    }
+
     public async Task AddUser(User user)
     {
         context.Users.Add(user);

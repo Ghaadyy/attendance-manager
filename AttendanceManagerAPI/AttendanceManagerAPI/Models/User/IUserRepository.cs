@@ -7,6 +7,7 @@ public interface IUserRepository
 {
     User? GetUserById(int userId);
     User? GetByUserName(string userName);
+    User? GetByEmail(string email);
     User? AuthenticateUser(string email, string password);
     List<Role> GetUserRoles(User user);
     List<User> GetAllUsers();
