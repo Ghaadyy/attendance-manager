@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.JsonPatch;
 using System.Data;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Security.Claims;
+using System.Numerics;
 
 namespace AttendanceManagerAPI.Controllers;
 
@@ -47,7 +49,26 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost("login")]
+	[HttpGet("userinfo")]
+	[Authorize]
+	public IActionResult GetUserInfo()
+	{
+        var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        int userId;
+
+		if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId))
+		{
+			return BadRequest("User ID missing from token");
+		}
+
+        User? user = _userRepository.GetUserById(userId);
+
+        if (user is null) return BadRequest("User not found");
+
+		return Ok(user);
+	}
+
+	[HttpPost("login")]
     public ActionResult Login([FromBody] LoginModel model)
     {
         var user = _userRepository.AuthenticateUser(model.Email, model.Password);
