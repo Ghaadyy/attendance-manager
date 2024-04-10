@@ -72,22 +72,28 @@ public class SessionsController : Controller
         return Ok();
     }
 
-    [HttpGet("attendance/{sessionId}")]
+    [HttpPost("attendance/{sessionId}")]
     [Authorize(Roles = "Student")]
     public IActionResult MarkAttendance(int sessionId)
     {
         var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         int userId;
 
-        if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId)) {
+        if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId))
+        {
             return BadRequest("User ID missing from token");
         }
 
         Session? session = _sessionRepository.GetSession(sessionId);
 
-        if (session is null || _sessionRepository.CheckIfSessionValid(session) is false) return BadRequest("Session is not valid");
+        if (session is null || _sessionRepository.CheckIfSessionValid(session) is false)
+            return BadRequest("Session is not valid");
 
-        if (_sessionRepository.AddStudent(session, userId).Result is false) return BadRequest("Student not enrolled in the course");
+        if (_sessionRepository.AddStudent(session, userId).Result is false)
+            return BadRequest("Student not enrolled in the course");
+
+        if (_sessionRepository.IsStudentPresent(sessionId, userId))
+            return BadRequest("Student already marked their attendance");
 
         return Ok();
     }

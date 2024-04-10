@@ -12,4 +12,5 @@ public interface ISessionRepository
     IEnumerable<User> GetStudents(int sessionId);
     Task<bool> AddStudent(Session session, int studentId);
     bool CheckIfSessionValid(Session session);
+    bool IsStudentPresent(int sessionId, int studentId);
 }

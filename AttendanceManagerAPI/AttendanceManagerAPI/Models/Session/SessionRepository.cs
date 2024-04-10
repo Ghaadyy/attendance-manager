@@ -59,7 +59,7 @@ public class SessionRepository : ISessionRepository
         {
             StudentId = studentId,
             SessionId = session.Id,
-            JoinDate = DateTime.Now
+            JoinDate = DateTime.UtcNow
         };
 
         context.Attendance.Add(attendance);
@@ -67,6 +67,13 @@ public class SessionRepository : ISessionRepository
         await context.SaveChangesAsync();
 
         return true;
+    }
+
+    public bool IsStudentPresent(int sessionId, int studentId)
+    {
+        return context.Attendance
+            .FirstOrDefault(att => att.StudentId == studentId && att.SessionId == sessionId)
+            is not null;
     }
 
     public bool CheckIfSessionValid(Session session)
