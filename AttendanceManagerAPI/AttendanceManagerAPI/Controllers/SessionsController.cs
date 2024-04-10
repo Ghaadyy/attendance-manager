@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AttendanceManagerAPI.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -76,6 +77,26 @@ public class SessionsController : Controller
         if (session is null) return BadRequest();
 
         await _sessionRepository.DeleteSession(session);
+
+        return Ok();
+    }
+
+    [HttpGet("attendance/{sessionId}")]
+    [Authorize(Roles = "Student")]
+    public IActionResult MarkAttendance(int sessionId)
+    {
+        var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        int userId;
+
+        if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId)) {
+            return BadRequest("User ID missing from token");
+        }
+
+        Session? session = _sessionRepository.GetSession(sessionId);
+
+        if (session is null || _sessionRepository.CheckIfSessionValid(session) is false) return BadRequest("Session is not valid");
+
+        if (_sessionRepository.AddStudent(session, userId).Result is false) return BadRequest("Student not enrolled in the course");
 
         return Ok();
     }

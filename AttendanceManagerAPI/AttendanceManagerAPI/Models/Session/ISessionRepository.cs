@@ -10,4 +10,6 @@ public interface ISessionRepository
     //Task EditSession(Session session);
     Task DeleteSession(Session session);
     IEnumerable<User> GetStudents(int sessionId);
+    Task<bool> AddStudent(Session session, int studentId);
+    bool CheckIfSessionValid(Session session);
 }

@@ -5,10 +5,12 @@ namespace AttendanceManagerAPI.Models;
 public class SessionRepository : ISessionRepository
 {
     private readonly AttendanceManagerContext context;
+    private readonly ICourseRepository _courseRepository;
 
-    public SessionRepository(AttendanceManagerContext context)
+    public SessionRepository(AttendanceManagerContext context, ICourseRepository courseRepository)
     {
         this.context = context;
+        this._courseRepository = courseRepository;
     }
 
     public async Task AddSession(Session session)
@@ -47,6 +49,34 @@ public class SessionRepository : ISessionRepository
                        select student;
 
         return students;
+    }
+
+    public async Task<bool> AddStudent(Session session, int studentId)
+    {
+        if (_courseRepository.CheckIfStudentEnrolled(session.CourseId, studentId) is false) return false;
+
+        Attendance attendance = new Attendance
+        {
+            StudentId = studentId,
+            SessionId = session.Id,
+            JoinDate = DateTime.Now
+        };
+
+        context.Attendance.Add(attendance);
+
+        await context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public bool CheckIfSessionValid(Session session)
+    {
+        if (session.StartDate > DateTime.Now || session.EndDate < DateTime.Now)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
 
