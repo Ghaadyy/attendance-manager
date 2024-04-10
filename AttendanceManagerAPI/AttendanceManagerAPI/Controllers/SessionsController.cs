@@ -89,11 +89,11 @@ public class SessionsController : Controller
         if (session is null || _sessionRepository.CheckIfSessionValid(session) is false)
             return BadRequest("Session is not valid");
 
-        if (_sessionRepository.AddStudent(session, userId).Result is false)
-            return BadRequest("Student not enrolled in the course");
-
         if (_sessionRepository.IsStudentPresent(sessionId, userId))
             return BadRequest("Student already marked their attendance");
+
+        if (_sessionRepository.AddStudent(session, userId).Result is false)
+            return BadRequest("Student not enrolled in the course");
 
         return Ok();
     }
