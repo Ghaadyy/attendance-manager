@@ -94,10 +94,10 @@ public class CourseRepository : ICourseRepository
         IEnumerable<User> students = GetStudents(courseId);
         foreach(User student in students)
         {
-            if (student.Id == studentId) return false;
+            if (student.Id == studentId) return true;
         }
 
-        return true;
+        return false;
     }
 }
 
