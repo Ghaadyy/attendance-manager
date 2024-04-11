@@ -47,7 +47,7 @@ public class SessionsController : Controller
         var session = _sessionRepository.GetSession(sessionId);
         if (session is null) return BadRequest("Session not valid");
 
-        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, (int)userId, session.CourseId, role);
+        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, session.CourseId, (int)userId, role);
         if (requirement.Succeed() is false) return Unauthorized();
 
 		return Ok(_sessionRepository.GetStudents(sessionId));
@@ -66,7 +66,7 @@ public class SessionsController : Controller
         var session = _sessionRepository.GetSession(sessionId);
         if (session is null) return BadRequest("Session not valid");
 
-        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, (int)userId, session.CourseId, role);
+        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, session.CourseId, (int)userId, role);
         if (requirement.Succeed() is false) return Unauthorized();
 
         return Ok(session);
@@ -84,14 +84,14 @@ public class SessionsController : Controller
 
         if(role != "Administrator")
         {
-            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, (int)userId, model.CourseId, role);
+            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, model.CourseId, (int)userId, role);
             if (requirement.Succeed() is false) return Unauthorized();
 
             if (userId != model.TeacherId) return BadRequest("Can only create session with your own teacher ID");
         }
         else
         {
-            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, model.TeacherId, model.CourseId, role);
+            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, model.CourseId, (int)userId, role);
             if (requirement.Succeed() is false) return BadRequest("Teacher not in the course");
         }
 

@@ -2,7 +2,7 @@
 
 public class StudentEnrolledRequirement : UserEnrolledRequirement
 {
-    public StudentEnrolledRequirement(ICourseRepository courseRepository, int userId, int courseId, string role) : base(courseRepository, userId, courseId, role)
+    public StudentEnrolledRequirement(ICourseRepository courseRepository, int courseId, int userId, string role) : base(courseRepository, courseId, userId, role)
     {
 
     }

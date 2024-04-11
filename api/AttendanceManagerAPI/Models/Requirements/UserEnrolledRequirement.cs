@@ -7,7 +7,7 @@ public abstract class UserEnrolledRequirement : IUserEnrolledRequirement
 	protected int CourseId { get; set; }
 	protected bool isAdmin { get; set; }
 
-	public UserEnrolledRequirement(ICourseRepository courseRepository, int userId, int courseId, string role)
+	public UserEnrolledRequirement(ICourseRepository courseRepository, int courseId, int userId, string role)
 	{
 		_courseRepository = courseRepository;
 		UserId = userId;

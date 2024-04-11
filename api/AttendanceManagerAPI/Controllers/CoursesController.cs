@@ -53,7 +53,7 @@ public class CoursesController : ControllerBase
         var course = _courseRepository.GetCourse(courseId);
         if (course is null) return BadRequest("Course not found");
 
-        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, (int)userId, course.Id, role);
+        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, course.Id, (int)userId, role);
         if (requirement.Succeed() is false) return Unauthorized();
 
         return Ok(_courseRepository.GetStudents(courseId));
@@ -96,7 +96,7 @@ public class CoursesController : ControllerBase
         string? role = _tokenRepository.GetRoleFromToken(User);
         if (role is null) return BadRequest("User Role missing from token");
 
-        UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, (int)userId, courseId, role);
+        UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, courseId, (int)userId, role);
         if (requirement.Succeed() is false) return Unauthorized();
 
         try

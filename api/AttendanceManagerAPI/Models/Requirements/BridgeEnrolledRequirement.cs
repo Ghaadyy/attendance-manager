@@ -24,11 +24,11 @@ public class BridgeEnrolledRequirement : IUserEnrolledRequirement
 
         if(Role == "Teacher")
         {
-            _requirement = new TeacherEnrolledRequirement(_courseRepository, UserId, CourseId, Role);
+            _requirement = new TeacherEnrolledRequirement(_courseRepository, CourseId, UserId, Role);
         }
         else
         {
-            _requirement = new StudentEnrolledRequirement(_courseRepository, UserId, CourseId, Role);
+            _requirement = new StudentEnrolledRequirement(_courseRepository, CourseId, UserId, Role);
         }
 
         return _requirement.Succeed();

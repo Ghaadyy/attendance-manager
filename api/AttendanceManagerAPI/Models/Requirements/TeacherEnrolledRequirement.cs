@@ -2,7 +2,7 @@
 
 public class TeacherEnrolledRequirement : UserEnrolledRequirement
 {
-    public TeacherEnrolledRequirement(ICourseRepository courseRepository, int userId, int courseId, string role) : base(courseRepository, userId, courseId, role)
+    public TeacherEnrolledRequirement(ICourseRepository courseRepository, int courseId, int userId, string role) : base(courseRepository, courseId, userId, role)
     {
 
     }
