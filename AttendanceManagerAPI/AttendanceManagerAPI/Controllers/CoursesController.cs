@@ -20,13 +20,14 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Course>> Get()
+    [Authorize(Roles = "Administrator")]
+    public IActionResult Get()
     {
         return Ok(_courseRepository.GetCourses());
     }
 
     [HttpGet("{courseId}")]
-    public ActionResult<Course> Get(int courseId)
+    public IActionResult Get(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
 
@@ -36,13 +37,15 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet("{courseId}/students")]
-    public ActionResult<IEnumerable<User>> GetStudents(int courseId)
+    [Authorize(Roles = "Administrator,Teacher,Student")]
+    public IActionResult GetStudents(int courseId)
     {
         return Ok(_courseRepository.GetStudents(courseId));
     }
 
     [HttpGet("{courseId}/sessions")]
-    public ActionResult<IEnumerable<User>> GetSessions(int courseId)
+	[Authorize(Roles = "Administrator,Teacher,Student")]
+	public IActionResult GetSessions(int courseId)
     {
         return Ok(_courseRepository.GetSessions(courseId));
     }
@@ -68,6 +71,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPatch("{courseId}/student/{studentId}")]
+    [Authorize(Roles = "Administrator,Teacher")]
     public async Task<IActionResult> AddStudent(int courseId, int studentId)
     {
         try
@@ -83,6 +87,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPatch("{courseId}/teacher/{teacherId}")]
+    [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> AddTeacher(int courseId, int teacherId)
     {
         try
@@ -98,6 +103,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet("{courseId}/teachers")]
+    [Authorize(Roles = "Administrator,Teacher,Student")]
     public ActionResult<IEnumerable<User>> GetTeachers(int courseId)
     {
         return Ok(_courseRepository.GetTeachers(courseId));

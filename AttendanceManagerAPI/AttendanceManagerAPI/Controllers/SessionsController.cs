@@ -21,19 +21,22 @@ public class SessionsController : Controller
     }
 
     [HttpGet]
-    public ActionResult<IEnumerable<Session>> Get()
+    [Authorize(Roles = "Administrator")]
+    public IActionResult Get()
     {
         return Ok(_sessionRepository.GetSessions());
     }
 
     [HttpGet("{sessionId}/students")]
-    public ActionResult<IEnumerable<User>> GetStudents(int sessionId)
+	[Authorize(Roles = "Administrator,Teacher,Student")]
+	public IActionResult GetStudents(int sessionId)
     {
         return Ok(_sessionRepository.GetStudents(sessionId));
     }
 
     [HttpGet("{sessionId}")]
-    public ActionResult<Course> Get(int sessionId)
+	[Authorize(Roles = "Administrator,Teacher,Student")]
+	public IActionResult Get(int sessionId)
     {
         var session = _sessionRepository.GetSession(sessionId);
 
