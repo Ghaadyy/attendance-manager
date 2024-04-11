@@ -47,7 +47,7 @@ public class SessionsController : Controller
         var session = _sessionRepository.GetSession(sessionId);
         if (session is null) return BadRequest("Session not valid");
 
-        UserEnrolledRequirement requirement = new UserEnrolledRequirement(_courseRepository, (int)userId, session.CourseId, role);
+        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, (int)userId, session.CourseId, role);
         if (requirement.Succeed() is false) return Unauthorized();
 
 		return Ok(_sessionRepository.GetStudents(sessionId));
@@ -57,9 +57,17 @@ public class SessionsController : Controller
 	[Authorize(Roles = "Administrator,Teacher,Student")]
 	public IActionResult Get(int sessionId)
     {
-        var session = _sessionRepository.GetSession(sessionId);
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
 
-        if (session is null) return BadRequest();
+        string? role = _tokenRepository.GetRoleFromToken(User);
+        if (role is null) return BadRequest("User Role missing from token");
+
+        var session = _sessionRepository.GetSession(sessionId);
+        if (session is null) return BadRequest("Session not valid");
+
+        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, (int)userId, session.CourseId, role);
+        if (requirement.Succeed() is false) return Unauthorized();
 
         return Ok(session);
     }
@@ -68,6 +76,25 @@ public class SessionsController : Controller
     [Authorize(Roles = "Administrator,Teacher")]
     public async Task<IActionResult> CreateSession([FromBody] CreateSessionModel model)
     {
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
+
+        string? role = _tokenRepository.GetRoleFromToken(User);
+        if (role is null) return BadRequest("User Role missing from token");
+
+        if(role != "Administrator")
+        {
+            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, (int)userId, model.CourseId, role);
+            if (requirement.Succeed() is false) return Unauthorized();
+
+            if (userId != model.TeacherId) return BadRequest("Can only create session with your own teacher ID");
+        }
+        else
+        {
+            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, model.TeacherId, model.CourseId, role);
+            if (requirement.Succeed() is false) return BadRequest("Teacher not in the course");
+        }
+
         var session = new Session
         {
             StartDate = model.StartDate.ToUniversalTime(),

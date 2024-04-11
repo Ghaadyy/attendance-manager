@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AttendanceManagerAPI.Models;
+using AttendanceManagerAPI.Models.Token;
+using AttendanceManagerAPI.Models.Requirements;
 
 namespace AttendanceManagerAPI.Controllers;
 
@@ -13,10 +15,12 @@ namespace AttendanceManagerAPI.Controllers;
 public class CoursesController : ControllerBase
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly ITokenRepository _tokenRepository;
 
-    public CoursesController(ICourseRepository courseRepository)
+    public CoursesController(ICourseRepository courseRepository, ITokenRepository tokenRepository)
     {
         _courseRepository = courseRepository;
+        _tokenRepository = tokenRepository;
     }
 
     [HttpGet]
@@ -40,6 +44,18 @@ public class CoursesController : ControllerBase
     [Authorize(Roles = "Administrator,Teacher,Student")]
     public IActionResult GetStudents(int courseId)
     {
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
+
+        string? role = _tokenRepository.GetRoleFromToken(User);
+        if (role is null) return BadRequest("User Role missing from token");
+
+        var course = _courseRepository.GetCourse(courseId);
+        if (course is null) return BadRequest("Course not found");
+
+        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, (int)userId, course.Id, role);
+        if (requirement.Succeed() is false) return Unauthorized();
+
         return Ok(_courseRepository.GetStudents(courseId));
     }
 
@@ -74,6 +90,15 @@ public class CoursesController : ControllerBase
     [Authorize(Roles = "Administrator,Teacher")]
     public async Task<IActionResult> AddStudent(int courseId, int studentId)
     {
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
+
+        string? role = _tokenRepository.GetRoleFromToken(User);
+        if (role is null) return BadRequest("User Role missing from token");
+
+        UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, (int)userId, courseId, role);
+        if (requirement.Succeed() is false) return Unauthorized();
+
         try
         {
             await _courseRepository.AddStudent(courseId, studentId);
