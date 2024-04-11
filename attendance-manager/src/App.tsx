@@ -9,10 +9,15 @@ import {
 import "preline/preline";
 import { IStaticMethods } from "preline/preline";
 
-import NavBar from "./components/navigation/NavBar";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import "./App.css";
+import RootLayout from "./layouts/RootLayout";
+import Account from "./pages/Account";
+import Courses from "./pages/Courses";
+import Dashboard from "./pages/Dashboard";
+import Course from "./pages/Course";
+import Users from "./pages/Users";
 
 declare global {
   interface Window {
@@ -20,26 +25,42 @@ declare global {
   }
 }
 
-function Root() {
-  const location = useLocation();
+// const location = useLocation();
 
-  useEffect(() => {
-    window.HSStaticMethods.autoInit();
-  }, [location.pathname]);
-
-  return (
-    <div>
-      <NavBar />
-      <Outlet />
-    </div>
-  );
-}
+// useEffect(() => {
+//   window.HSStaticMethods.autoInit();
+// }, [location.pathname]);
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Root />,
+      element: <RootLayout />,
+      children: [
+        {
+          path: "",
+          element: <Dashboard />,
+        },
+        {
+          path: "account",
+          element: <Account />,
+        },
+        {
+          path: "users",
+          element: <Users />,
+        },
+        {
+          path: "courses",
+          element: <Courses />,
+        },
+        {
+          path: "course",
+          element: <Course />,
+        },
+      ],
+    },
+    {
+      path: "/auth",
       children: [
         {
           path: "login",
