@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AttendanceManagerAPI.Models;
+using AttendanceManagerAPI.Models.Requirements;
+using AttendanceManagerAPI.Models.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,10 +16,15 @@ namespace AttendanceManagerAPI.Controllers;
 public class SessionsController : Controller
 {
     private readonly ISessionRepository _sessionRepository;
+    private readonly ITokenRepository _tokenRepository;
 
-    public SessionsController(ISessionRepository sessionRepository)
+    private readonly ICourseRepository _courseRepository;
+
+    public SessionsController(ISessionRepository sessionRepository, ITokenRepository tokenRepository, ICourseRepository courseRepository)
     {
         _sessionRepository = sessionRepository;
+        _tokenRepository = tokenRepository;
+        _courseRepository = courseRepository;
     }
 
     [HttpGet]
@@ -31,7 +38,19 @@ public class SessionsController : Controller
 	[Authorize(Roles = "Administrator,Teacher,Student")]
 	public IActionResult GetStudents(int sessionId)
     {
-        return Ok(_sessionRepository.GetStudents(sessionId));
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
+
+		string? role = _tokenRepository.GetRoleFromToken(User);
+		if (role is null) return BadRequest("User Role missing from token");
+
+        var session = _sessionRepository.GetSession(sessionId);
+        if (session is null) return BadRequest("Session not valid");
+
+        UserEnrolledRequirement requirement = new UserEnrolledRequirement(_courseRepository, (int)userId, session.CourseId, role);
+        if (requirement.Succeed() is false) return Unauthorized();
+
+		return Ok(_sessionRepository.GetStudents(sessionId));
     }
 
     [HttpGet("{sessionId}")]
@@ -79,23 +98,26 @@ public class SessionsController : Controller
     [Authorize(Roles = "Student")]
     public IActionResult MarkAttendance(int sessionId)
     {
-        var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        int userId;
+        //var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //int userId;
 
-        if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId))
-        {
-            return BadRequest("User ID missing from token");
-        }
+        //if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId))
+        //{
+        //    return BadRequest("User ID missing from token");
+        //}
+
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
 
         Session? session = _sessionRepository.GetSession(sessionId);
 
         if (session is null || _sessionRepository.CheckIfSessionValid(session) is false)
             return BadRequest("Session is not valid");
 
-        if (_sessionRepository.IsStudentPresent(sessionId, userId))
+        if (_sessionRepository.IsStudentPresent(sessionId, (int)userId))
             return BadRequest("Student already marked their attendance");
 
-        if (_sessionRepository.AddStudent(session, userId).Result is false)
+        if (_sessionRepository.AddStudent(session, (int)userId).Result is false)
             return BadRequest("Student not enrolled in the course");
 
         return Ok();

@@ -13,4 +13,5 @@ public interface ICourseRepository
     Task AddStudent(int courseId, int studentId);
     Task AddTeacher(int courseId, int teacherId);
     bool CheckIfStudentEnrolled(int courseId, int studentId);
+    bool CheckIfTeacherEnrolled(int courseId, int teacherId);
 }

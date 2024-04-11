@@ -99,5 +99,16 @@ public class CourseRepository : ICourseRepository
 
         return false;
     }
+
+	public bool CheckIfTeacherEnrolled(int courseId, int teacherId)
+	{
+		IEnumerable<User> teachers = GetTeachers(courseId);
+		foreach (User teacher in teachers)
+		{
+			if (teacher.Id == teacherId) return true;
+		}
+
+		return false;
+	}
 }
 
