@@ -76,14 +76,16 @@ public class SessionsController : Controller
     [Authorize(Roles = "Administrator,Teacher")]
     public async Task<IActionResult> CreateSession([FromBody] CreateSessionModel model)
     {
-        int? userId = _tokenRepository.GetIdFromToken(User);
-        if (userId is null) return BadRequest("User ID missing from token");
+        if (model.StartDate >= model.EndDate) return BadRequest("End Date should be bigger than Start Date");
 
         string? role = _tokenRepository.GetRoleFromToken(User);
         if (role is null) return BadRequest("User Role missing from token");
 
         if(role != "Administrator")
         {
+            int? userId = _tokenRepository.GetIdFromToken(User);
+            if (userId is null) return BadRequest("User ID missing from token");
+
             UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, model.CourseId, (int)userId, role);
             if (requirement.Succeed() is false) return Unauthorized();
 
@@ -91,7 +93,7 @@ public class SessionsController : Controller
         }
         else
         {
-            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, model.CourseId, (int)userId, role);
+            UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, model.CourseId, model.TeacherId, role);
             if (requirement.Succeed() is false) return BadRequest("Teacher not in the course");
         }
 

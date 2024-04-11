@@ -12,6 +12,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Numerics;
 using BCrypt.Net;
+using AttendanceManagerAPI.Models.Token;
 
 namespace AttendanceManagerAPI.Controllers;
 
@@ -21,11 +22,13 @@ public class UsersController : ControllerBase
 {
     private readonly TokenGenerator generator;
     private readonly IUserRepository _userRepository;
+    private readonly ITokenRepository _tokenRepository;
 
-    public UsersController(TokenGenerator generator, IUserRepository userRepository)
+    public UsersController(TokenGenerator generator, IUserRepository userRepository, ITokenRepository tokenRepository)
     {
         this.generator = generator;
         _userRepository = userRepository;
+        _tokenRepository = tokenRepository;
     }
 
     [HttpGet]
@@ -52,15 +55,10 @@ public class UsersController : ControllerBase
     [Authorize]
     public IActionResult GetUserInfo()
     {
-        var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        int userId;
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
 
-        if (nameIdentifier is null || !int.TryParse(nameIdentifier, out userId))
-        {
-            return BadRequest("User ID missing from token");
-        }
-
-        User? user = _userRepository.GetUserById(userId);
+        User? user = _userRepository.GetUserById((int)userId);
 
         if (user is null) return BadRequest("User not found");
 
@@ -125,6 +123,31 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<User>> Update(int userId, [FromBody] JsonPatchDocument<User> patchDoc)
     {
         User? user = _userRepository.GetUserById(userId);
+
+        if (user is null) return BadRequest("Invalid user id.");
+
+        patchDoc.ApplyTo(user);
+
+        // Validate the user, because when passing JsonPatchDocument,
+        // the underlying user object was not properly validated
+        TryValidateModel(user);
+
+        if (!ModelState.IsValid)
+            return BadRequest("Invalid parameters");
+
+        await _userRepository.UpdateUser(user, patchDoc);
+
+        return Ok(user);
+    }
+
+    [HttpPatch]
+    [Authorize]
+    public async Task<ActionResult<User>> Update([FromBody] JsonPatchDocument<User> patchDoc)
+    {
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
+
+        User? user = _userRepository.GetUserById((int)userId);
 
         if (user is null) return BadRequest("Invalid user id.");
 

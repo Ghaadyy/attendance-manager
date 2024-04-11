@@ -63,6 +63,18 @@ public class CoursesController : ControllerBase
 	[Authorize(Roles = "Administrator,Teacher,Student")]
 	public IActionResult GetSessions(int courseId)
     {
+        int? userId = _tokenRepository.GetIdFromToken(User);
+        if (userId is null) return BadRequest("User ID missing from token");
+
+        string? role = _tokenRepository.GetRoleFromToken(User);
+        if (role is null) return BadRequest("User Role missing from token");
+
+        var course = _courseRepository.GetCourse(courseId);
+        if (course is null) return BadRequest("Course not found");
+
+        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, course.Id, (int)userId, role);
+        if (requirement.Succeed() is false) return Unauthorized();
+
         return Ok(_courseRepository.GetSessions(courseId));
     }
 
