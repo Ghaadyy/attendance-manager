@@ -1,24 +1,15 @@
+import { useEffect, useState } from "react";
 import Card from "../components/Card";
 import { Course } from "../models/Course";
 
 function Courses() {
-  const courses: Course[] = [
-    {
-      id: 1,
-      name: "Web dynamique",
-      description: "Reactive web",
-    },
-    {
-      id: 2,
-      name: "Principes des compilateurs",
-      description: "Compiler construction",
-    },
-    {
-      id: 3,
-      name: "Design patterns",
-      description: "Patterns of object oriented software",
-    },
-  ];
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/courses")
+      .then((res) => res.json().then((data) => setCourses(data)))
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <>

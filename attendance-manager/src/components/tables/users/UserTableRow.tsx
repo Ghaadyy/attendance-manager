@@ -30,7 +30,7 @@ function UserTableRow({ user }: TableRowProps) {
       <td className="h-px w-52 whitespace-nowrap">
         <div className="px-6 py-3">
           <span className="block text-sm font-semibold text-gray-800">
-            {roles ?? "N/A"}
+            {roles ? roles.join(", ") : "N/A"}
           </span>
         </div>
       </td>
@@ -53,12 +53,9 @@ function UserTableRow({ user }: TableRowProps) {
       </td>
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-1.5">
-          <a
-            className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium"
-            href="#"
-          >
+          <button className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium">
             Edit
-          </a>
+          </button>
         </div>
       </td>
     </tr>

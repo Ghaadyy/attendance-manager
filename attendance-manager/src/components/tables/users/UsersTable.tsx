@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { User } from "../../../models/User";
 import UserTableRow from "./UserTableRow";
 
@@ -9,7 +10,7 @@ function UsersTable({ users }: TableProps) {
   return (
     <>
       {/* <!-- Table Section --> */}
-      <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}
         <div className="flex flex-col">
           <div className="-m-1.5 overflow-x-auto">
@@ -28,16 +29,9 @@ function UsersTable({ users }: TableProps) {
 
                   <div>
                     <div className="inline-flex gap-x-2">
-                      <a
-                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-                        href="#"
-                      >
-                        View all
-                      </a>
-
-                      <a
+                      <Link
+                        to="/users/create"
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                        href="#"
                       >
                         <svg
                           className="flex-shrink-0 size-4"
@@ -55,7 +49,7 @@ function UsersTable({ users }: TableProps) {
                           <path d="M12 5v14" />
                         </svg>
                         Add user
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -128,7 +122,7 @@ function UsersTable({ users }: TableProps) {
                     </p>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <div className="inline-flex gap-x-2">
                       <button
                         type="button"
@@ -172,7 +166,7 @@ function UsersTable({ users }: TableProps) {
                         </svg>
                       </button>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 {/* <!-- End Footer --> */}
               </div>

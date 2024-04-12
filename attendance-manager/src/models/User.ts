@@ -6,5 +6,5 @@ export type User = {
   phoneNumber?: string;
   birthDate?: string;
   bloodType?: string;
-  roles?: string;
+  roles?: string[];
 };

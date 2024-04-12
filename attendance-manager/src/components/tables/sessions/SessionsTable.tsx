@@ -1,12 +1,15 @@
+import { Session } from "../../../models/Session";
 import CreateSessionModal from "../../modals/CreateSessionModal";
 import TableRow from "./SessionTableRow";
 
-function SessionsTable() {
+type TableProps = { sessions: Session[]; courseId: number };
+
+function SessionsTable({ sessions, courseId }: TableProps) {
   return (
     <>
-      <CreateSessionModal />
+      <CreateSessionModal courseId={courseId} />
       {/* <!-- Table Section --> */}
-      <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+      <div className="max-w-[85rem] px-4 py-10 sm:px-6 mx-auto">
         {/* <!-- Card --> */}
         <div className="flex flex-col">
           <div className="-m-1.5 overflow-x-auto">
@@ -102,13 +105,9 @@ function SessionsTable() {
                   </thead>
 
                   <tbody className="divide-y divide-gray-200">
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
-                    <TableRow />
+                    {sessions.map((s) => (
+                      <TableRow key={s.id} session={s} />
+                    ))}
                   </tbody>
                 </table>
                 {/* <!-- End Table --> */}
@@ -117,12 +116,14 @@ function SessionsTable() {
                 <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
                   <div>
                     <p className="text-sm text-gray-600">
-                      <span className="font-semibold text-gray-800">6</span>{" "}
-                      results
+                      <span className="font-semibold text-gray-800">
+                        {sessions.length}
+                      </span>{" "}
+                      {sessions.length === 1 ? "result" : "results"}
                     </p>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <div className="inline-flex gap-x-2">
                       <button
                         type="button"
@@ -166,7 +167,7 @@ function SessionsTable() {
                         </svg>
                       </button>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 {/* <!-- End Footer --> */}
               </div>
