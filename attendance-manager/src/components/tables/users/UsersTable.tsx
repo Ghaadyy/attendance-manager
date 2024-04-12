@@ -111,7 +111,7 @@ function UsersTable({ users }: TableProps) {
 
                   <tbody className="divide-y divide-gray-200">
                     {users.map((user) => (
-                      <UserTableRow user={user} />
+                      <UserTableRow key={user.id} user={user} />
                     ))}
                   </tbody>
                 </table>

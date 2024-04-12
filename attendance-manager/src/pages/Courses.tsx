@@ -29,7 +29,7 @@ function Courses() {
             name={course.name}
             text={course.description}
             actionName="Go to course"
-            actionPath="/course"
+            actionPath={`/course/${course.id}`}
           />
         ))}
       </div>

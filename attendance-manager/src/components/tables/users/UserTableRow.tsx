@@ -8,7 +8,7 @@ function UserTableRow({ user }: TableRowProps) {
     lastName,
     email,
     roles,
-    birthdate,
+    birthDate,
     phoneNumber,
     bloodType,
   } = user;
@@ -30,25 +30,25 @@ function UserTableRow({ user }: TableRowProps) {
       <td className="h-px w-52 whitespace-nowrap">
         <div className="px-6 py-3">
           <span className="block text-sm font-semibold text-gray-800">
-            {roles}
+            {roles ?? "N/A"}
           </span>
         </div>
       </td>
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-3">
           <span className="text-sm text-gray-500">
-            {birthdate.toDateString()}
+            {birthDate ? new Date(birthDate).toDateString() : "N/A"}
           </span>
         </div>
       </td>
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-3">
-          <span className="text-sm text-gray-500">{phoneNumber}</span>
+          <span className="text-sm text-gray-500">{phoneNumber ?? "N/A"}</span>
         </div>
       </td>
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-3">
-          <span className="text-sm text-gray-500">{bloodType}</span>
+          <span className="text-sm text-gray-500">{bloodType ?? "N/A"}</span>
         </div>
       </td>
       <td className="size-px whitespace-nowrap">

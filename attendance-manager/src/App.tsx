@@ -1,10 +1,4 @@
-import { useEffect } from "react";
-import {
-  Outlet,
-  RouterProvider,
-  createBrowserRouter,
-  useLocation,
-} from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import "preline/preline";
 import { IStaticMethods } from "preline/preline";
@@ -24,12 +18,6 @@ declare global {
     HSStaticMethods: IStaticMethods;
   }
 }
-
-// const location = useLocation();
-
-// useEffect(() => {
-//   window.HSStaticMethods.autoInit();
-// }, [location.pathname]);
 
 function App() {
   const router = createBrowserRouter([
@@ -54,7 +42,7 @@ function App() {
           element: <Courses />,
         },
         {
-          path: "course",
+          path: "course/:courseId",
           element: <Course />,
         },
       ],

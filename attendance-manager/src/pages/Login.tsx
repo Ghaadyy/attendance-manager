@@ -12,7 +12,7 @@ function Login() {
               Don't have an account yet?{" "}
               <Link
                 className="text-blue-600 decoration-2 hover:underline font-medium"
-                to="/signup"
+                to="/auth/signup"
               >
                 Sign up here
               </Link>

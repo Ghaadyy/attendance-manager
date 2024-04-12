@@ -1,8 +1,10 @@
+import CreateSessionModal from "../../modals/CreateSessionModal";
 import TableRow from "./SessionTableRow";
 
 function SessionsTable() {
   return (
     <>
+      <CreateSessionModal />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         {/* <!-- Card --> */}
@@ -23,9 +25,10 @@ function SessionsTable() {
 
                   <div>
                     <div className="inline-flex gap-x-2">
-                      <a
+                      <button
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                        href="#"
+                        type="button"
+                        data-hs-overlay="#hs-basic-modal"
                       >
                         <svg
                           className="flex-shrink-0 size-4"
@@ -43,7 +46,7 @@ function SessionsTable() {
                           <path d="M12 5v14" />
                         </svg>
                         Create session
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
