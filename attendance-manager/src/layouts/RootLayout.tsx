@@ -1,10 +1,14 @@
-import { useEffect } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import NavItem from "../components/navigation/NavItem";
 import Avatar from "../components/avatars/Avatar";
+import { userContext } from "../store/UserContext";
 
 function RootLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const { user } = useContext(userContext);
 
   useEffect(() => {
     window.HSStaticMethods.autoInit();
@@ -96,7 +100,7 @@ function RootLayout() {
                   <div className="py-3 px-5 -m-2 bg-gray-100 rounded-t-lg">
                     <p className="text-sm text-gray-500">Signed in as</p>
                     <p className="text-sm font-medium text-gray-800">
-                      email@site.com
+                      {user?.email}
                     </p>
                   </div>
                   <div className="mt-2 py-2 first:pt-0 last:pb-0">
@@ -123,9 +127,12 @@ function RootLayout() {
                       </svg>
                       Account
                     </Link>
-                    <Link
+                    <button
                       className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
-                      to="/account"
+                      onClick={() => {
+                        localStorage.removeItem("token");
+                        navigate("/auth/login");
+                      }}
                     >
                       <svg
                         className="flex-shrink-0 size-4"
@@ -145,7 +152,7 @@ function RootLayout() {
                         <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                       </svg>
                       Log out
-                    </Link>
+                    </button>
                   </div>
                 </div>
               </div>

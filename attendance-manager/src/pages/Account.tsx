@@ -1,4 +1,63 @@
+import { useContext } from "react";
+import { userContext } from "../store/UserContext";
+import { Link } from "react-router-dom";
+import { SubmitHandler, useForm } from "react-hook-form";
+
+type Inputs = {
+  email: string;
+  // password: string;
+  username: string;
+  firstname: string;
+  lastname: string;
+  bloodtype: string;
+  phonenumber: string;
+};
+
 function Account() {
+  const { user, token } = useContext(userContext);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
+
+  console.log(watch("bloodtype"));
+
+  const submitHandler: SubmitHandler<Inputs> = async (data) => {
+    console.log("submitting");
+    console.log(data);
+    console.log(
+      Object.entries(data)
+        .map((kv) => ({
+          op: "replace",
+          path: kv[0],
+          value: kv[1],
+        }))
+        .filter(({ value }) => value)
+    );
+
+    await fetch("http://localhost:8000/api/users/", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify(
+        Object.entries(data)
+          .map((kv) => ({
+            op: "replace",
+            path: kv[0],
+            value: kv[1],
+          }))
+          .filter(({ value }) => value)
+      ),
+    });
+
+    // console.log(await res.json());
+  };
+
   return (
     <>
       <div className="max-w-5xl px-4 py-5 sm:px-6 lg:px-8 lg:py-5 mx-auto">
@@ -9,7 +68,7 @@ function Account() {
           </p>
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit(submitHandler)}>
           <div className="grid sm:grid-cols-12 gap-2 sm:gap-6">
             <div className="sm:col-span-3">
               <label
@@ -45,15 +104,19 @@ function Account() {
             <div className="sm:col-span-9">
               <div className="sm:flex">
                 <input
+                  {...register("firstname")}
                   id="full-name"
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm -mt-px -ms-px first:rounded-t-lg last:rounded-b-lg sm:first:rounded-s-lg sm:mt-0 sm:first:ms-0 sm:first:rounded-se-none sm:last:rounded-es-none sm:last:rounded-e-lg text-sm relative focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="John"
+                  defaultValue={user?.firstName}
                 />
                 <input
+                  {...register("lastname")}
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm -mt-px -ms-px first:rounded-t-lg last:rounded-b-lg sm:first:rounded-s-lg sm:mt-0 sm:first:ms-0 sm:first:rounded-se-none sm:last:rounded-es-none sm:last:rounded-e-lg text-sm relative focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="Doe"
+                  defaultValue={user?.lastName}
                 />
               </div>
             </div>
@@ -71,10 +134,12 @@ function Account() {
 
             <div className="sm:col-span-9">
               <input
+                {...register("email")}
                 id="email"
                 type="email"
                 className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                 placeholder="john.doe@email.com"
+                defaultValue={user?.email}
               />
             </div>
             {/* <!-- End Col --> */}
@@ -93,12 +158,14 @@ function Account() {
               <div className="space-y-2">
                 <input
                   id="password"
+                  disabled
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="Enter current password"
                 />
                 <input
                   type="text"
+                  disabled
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="Enter new password"
                 />
@@ -122,10 +189,12 @@ function Account() {
             <div className="sm:col-span-9">
               <div className="sm:flex">
                 <input
+                  {...register("phonenumber")}
                   id="phone"
                   type="text"
                   className="py-2 px-3 pe-11 block w-full rounded-lg border-gray-200 shadow-sm -mt-px -ms-px sm:mt-0 sm:first:ms-0 text-sm relative focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="+961 01 000 000"
+                  defaultValue={user?.phoneNumber}
                 />
               </div>
             </div>
@@ -155,6 +224,7 @@ function Account() {
                 }'
                 className="hidden"
                 id="blood-type"
+                defaultValue={user?.bloodType}
               >
                 <option value="">Choose</option>
                 <option>A+</option>
@@ -176,14 +246,15 @@ function Account() {
           {/* <!-- End Grid --> */}
 
           <div className="mt-5 flex justify-end gap-x-2">
-            <button
+            <Link
               type="button"
+              to="/"
               className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
             >
               Cancel
-            </button>
+            </Link>
             <button
-              type="button"
+              type="submit"
               className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
             >
               Save changes
