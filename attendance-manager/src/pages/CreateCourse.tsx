@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { userContext } from "../store/UserContext";
 
 function CreateCourse() {
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+
+  const { user, token } = useContext(userContext);
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = (ev) => {
     ev.preventDefault();
@@ -11,6 +14,7 @@ function CreateCourse() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
         name,

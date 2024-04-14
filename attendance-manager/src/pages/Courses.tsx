@@ -1,12 +1,21 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Card from "../components/Card";
 import { Course } from "../models/Course";
+import { userContext } from "../store/UserContext";
 
 function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
 
+  const { user, token } = useContext(userContext);
+
   useEffect(() => {
-    fetch("http://localhost:8000/api/courses")
+    fetch("http://localhost:8000/api/courses", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      }
+    })
       .then((res) => res.json().then((data) => setCourses(data)))
       .catch((err) => console.log(err));
   }, []);
