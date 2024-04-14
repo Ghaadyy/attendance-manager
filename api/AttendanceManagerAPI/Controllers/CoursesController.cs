@@ -24,11 +24,21 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator,Student,Teacher")]
     public IActionResult Get()
     {
-        return Ok(_courseRepository.GetCourses());
-    }
+		string? role = _tokenRepository.GetRoleFromToken(User);
+		if (role is null) return BadRequest("User Role missing from token");
+
+        if (role is "Administrator") return Ok(_courseRepository.GetCourses());
+
+		int? userId = _tokenRepository.GetIdFromToken(User);
+		if (userId is null) return BadRequest("User ID missing from token");
+
+        if (role is "Student") return Ok(_courseRepository.GetStudentCourses((int)userId));
+
+        return Ok(_courseRepository.GetTeacherCourses((int)userId));
+	}
 
     [HttpGet("{courseId}")]
     public IActionResult Get(int courseId)

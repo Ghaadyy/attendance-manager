@@ -110,5 +110,25 @@ public class CourseRepository : ICourseRepository
 
 		return false;
 	}
+
+	public IEnumerable<Course> GetStudentCourses(int studentId)
+	{
+		var courses = from cs in context.CourseStudent
+					   join course in context.Courses on cs.CourseId equals course.Id
+					   where cs.StudentId == studentId
+					   select course;
+
+		return courses;
+	}
+
+	public IEnumerable<Course> GetTeacherCourses(int teacherId)
+	{
+		var courses = from cs in context.CourseTeacher
+					  join course in context.Courses on cs.CourseId equals course.Id
+					  where cs.TeacherId == teacherId
+					  select course;
+
+		return courses;
+	}
 }
 
