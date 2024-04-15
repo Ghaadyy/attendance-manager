@@ -2,9 +2,9 @@ import { Session } from "../../../models/Session";
 import CreateSessionModal from "../../modals/CreateSessionModal";
 import TableRow from "./SessionTableRow";
 
-type TableProps = { sessions: Session[]; courseId: number };
+type TableProps = { sessions: Session[]; courseId: number; onDeleteSession: (sessionId: number) => void };
 
-function SessionsTable({ sessions, courseId }: TableProps) {
+function SessionsTable({ sessions, courseId, onDeleteSession }: TableProps) {
   return (
     <>
       <CreateSessionModal courseId={courseId} />
@@ -106,7 +106,7 @@ function SessionsTable({ sessions, courseId }: TableProps) {
 
                   <tbody className="divide-y divide-gray-200">
                     {sessions.map((s) => (
-                      <TableRow key={s.id} session={s} />
+                      <TableRow key={s.id} session={s} onDelete={onDeleteSession}/>
                     ))}
                   </tbody>
                 </table>

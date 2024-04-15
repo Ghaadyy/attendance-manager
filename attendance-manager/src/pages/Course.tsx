@@ -28,6 +28,10 @@ function Course() {
       .catch((err) => console.log(err));
   }, []);
 
+  const handleDeleteSession = (sessionId: number) => {
+    setSessions((prevSessions) => prevSessions.filter((session) => session.id !== sessionId));
+  };
+
   return (
     <div>
       <h1 className="text-xl font-bold text-gray-800">{course?.name}</h1>
@@ -43,7 +47,7 @@ function Course() {
             : "None"}
         </span>
       </p>
-      <SessionsTable sessions={sessions} courseId={Number.parseInt(courseId)} />
+      <SessionsTable sessions={sessions} courseId={Number.parseInt(courseId)} onDeleteSession={handleDeleteSession} />
     </div>
   );
 }

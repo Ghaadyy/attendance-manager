@@ -1,6 +1,10 @@
+import { toast } from "react-toastify";
 import { Session } from "../../../models/Session";
 
-type TableRowProps = { session: Session };
+type TableRowProps = { 
+  session: Session
+  onDelete: (sessionId: number) => void; 
+};
 
 function TickIcon() {
   return (
@@ -17,7 +21,31 @@ function TickIcon() {
   );
 }
 
-function SessionTableRow({ session }: TableRowProps) {
+function SessionTableRow({ session, onDelete }: TableRowProps) {
+
+  const token = localStorage.getItem("token");
+
+  const handleDelete = async () => {
+    const res = await fetch(`http://localhost:8000/api/sessions/${session.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    if (res.ok) {
+      onDelete(session.id);
+      toast.success("Session deleted successfully", {
+        toastId: res.status
+      });
+    }else {
+      toast.error("Could not delete session", {
+        toastId: res.status
+      });
+    }
+  };
+
   return (
     <tr>
       <td className="size-px whitespace-nowrap">
@@ -25,7 +53,7 @@ function SessionTableRow({ session }: TableRowProps) {
           <div className="flex items-center gap-x-3">
             <div className="grow">
               <span className="block text-sm font-semibold text-gray-800">
-                Jeudi à 8h
+                {session.id}
               </span>
             </div>
           </div>
@@ -78,6 +106,7 @@ function SessionTableRow({ session }: TableRowProps) {
               Edit
             </button>
             <button
+              onClick={handleDelete}
               type="button"
               className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
             >
