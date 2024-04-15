@@ -13,17 +13,19 @@ namespace AttendanceManagerAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CoursesController : ControllerBase
+public partial class CoursesController : ControllerBase
 {
     private readonly ICourseRepository _courseRepository;
     private readonly IUserRepository _userRepository;
     private readonly ITokenRepository _tokenRepository;
+    private readonly ISessionRepository _sessionRepository;
 
-    public CoursesController(ICourseRepository courseRepository, ITokenRepository tokenRepository, IUserRepository userRepository)
+    public CoursesController(ICourseRepository courseRepository, ITokenRepository tokenRepository, IUserRepository userRepository, ISessionRepository sessionRepository)
     {
         _courseRepository = courseRepository;
         _tokenRepository = tokenRepository;
         _userRepository = userRepository;
+        _sessionRepository = sessionRepository;
     }
 
     [HttpGet]
