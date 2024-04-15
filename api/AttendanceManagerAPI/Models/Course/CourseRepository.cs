@@ -114,11 +114,17 @@ public class CourseRepository : ICourseRepository
 
     public IEnumerable<Course> GetCoursesByUser(User user)
     {
-        var courses = from u in context.Users
-                      join cs in context.CourseStudent on u.Id equals cs.StudentId
-                      join c in context.Courses on cs.CourseId equals c.Id
-                      where cs.StudentId == user.Id
-                      select c;
+        var courses = (from u in context.Users
+                       join cs in context.CourseStudent on u.Id equals cs.StudentId
+                       join c in context.Courses on cs.CourseId equals c.Id
+                       where cs.StudentId == user.Id
+                       select c)
+                       .Union(
+                        from u in context.Users
+                        join ct in context.CourseTeacher on u.Id equals ct.TeacherId
+                        join c in context.Courses on ct.CourseId equals c.Id
+                        where ct.TeacherId == user.Id
+                        select c);
 
         return courses;
     }
