@@ -21,6 +21,8 @@ import CreateUser from "./pages/CreateUser";
 import { Provider as UserProvider } from "./store/UserContext";
 import { useEffect, useState } from "react";
 import { User } from "./models/User";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 declare global {
   interface Window {
@@ -117,6 +119,19 @@ function App() {
       }}
     >
       <RouterProvider router={router} />
+      <ToastContainer
+        // stacked
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        limit={5}
+      />
     </UserProvider>
   );
 }

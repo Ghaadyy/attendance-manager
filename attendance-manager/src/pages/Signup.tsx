@@ -3,6 +3,7 @@ import BasicInput from "../components/inputs/BasicInput";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useContext } from "react";
 import { userContext } from "../store/UserContext";
+import { toast } from "react-toastify";
 
 type Inputs = {
   email: string;
@@ -32,23 +33,30 @@ function Signup() {
       body: JSON.stringify(data),
     });
 
-    const { token } = await res.json();
+    if (!res.ok) {
+      toast.error(await res.text(), {
+        toastId: res.status
+      });
+    } else {
 
-    if (token) {
-      fetch("http://localhost:8000/api/users/me", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      }).then((res) =>
-        res.json().then((data) => {
-          userCtx.setUser(data);
-          userCtx.setToken(token);
-          localStorage.setItem("token", token);
-          navigate("/");
-        })
-      );
+      const { token } = await res.json();
+
+      if (token) {
+        fetch("http://localhost:8000/api/users/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        }).then((res) =>
+          res.json().then((data) => {
+            userCtx.setUser(data);
+            userCtx.setToken(token);
+            localStorage.setItem("token", token);
+            navigate("/");
+          })
+        );
+      }
     }
   };
 
@@ -74,7 +82,7 @@ function Signup() {
               <div className="grid gap-y-4">
                 <div className="relative">
                   <input
-                    {...register("firstname")}
+                    {...register("firstname", { required: true })}
                     type="text"
                     id="firstname"
                     className="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none

@@ -3,6 +3,7 @@ import BasicInput from "../components/inputs/BasicInput";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useContext } from "react";
 import { userContext } from "../store/UserContext";
+import { toast } from 'react-toastify';
 
 type Inputs = {
   email: string;
@@ -29,23 +30,30 @@ function Login() {
       body: JSON.stringify(data),
     });
 
-    const { token } = await res.json();
+    if (!res.ok) {
+      toast.error(await res.text(), {
+        toastId: res.status //to only allow one same error at the same time
+      });
+    } else {
 
-    if (token) {
-      fetch("http://localhost:8000/api/users/me", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-      }).then((res) =>
-        res.json().then((data) => {
-          userCtx.setUser(data);
-          userCtx.setToken(token);
-          localStorage.setItem("token", token);
-          navigate("/");
-        })
-      );
+      const { token } = await res.json();
+
+      if (token) {
+        fetch("http://localhost:8000/api/users/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        }).then((res) =>
+          res.json().then((data) => {
+            userCtx.setUser(data);
+            userCtx.setToken(token);
+            localStorage.setItem("token", token);
+            navigate("/");
+          })
+        );
+      }
     }
   };
 
