@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using AttendanceManagerAPI.Models;
 using AttendanceManagerAPI.Models.Token;
 using AttendanceManagerAPI.Models.Requirements;
+using System.Security.Claims;
 
 namespace AttendanceManagerAPI.Controllers;
 
@@ -15,31 +16,36 @@ namespace AttendanceManagerAPI.Controllers;
 public class CoursesController : ControllerBase
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IUserRepository _userRepository;
     private readonly ITokenRepository _tokenRepository;
 
-    public CoursesController(ICourseRepository courseRepository, ITokenRepository tokenRepository)
+    public CoursesController(ICourseRepository courseRepository, ITokenRepository tokenRepository, IUserRepository userRepository)
     {
         _courseRepository = courseRepository;
         _tokenRepository = tokenRepository;
+        _userRepository = userRepository;
     }
 
     [HttpGet]
-    [Authorize(Roles = "Administrator,Student,Teacher")]
     public IActionResult Get()
     {
-		string? role = _tokenRepository.GetRoleFromToken(User);
-		if (role is null) return BadRequest("User Role missing from token");
+        if (User.IsInRole("Administrator"))
+            return Ok(_courseRepository.GetCourses());
+        else
+        {
+            int? userId = _tokenRepository.GetIdFromToken(User);
+            if (userId is null) return BadRequest("User ID missing from token");
 
-        if (role is "Administrator") return Ok(_courseRepository.GetCourses());
+            User? user = _userRepository.GetUserById(userId.Value);
 
-		int? userId = _tokenRepository.GetIdFromToken(User);
-		if (userId is null) return BadRequest("User ID missing from token");
+            if (user is null) return BadRequest();
 
-        if (role is "Student") return Ok(_courseRepository.GetStudentCourses((int)userId));
+            return Ok(_courseRepository.GetCoursesByUser(user));
+        }
+    }
 
-        return Ok(_courseRepository.GetTeacherCourses((int)userId));
-	}
-
+    [Authorize(Policy = "StudentEnrolled")]
+    [Authorize(Roles = "Administrator")]
     [HttpGet("{courseId}")]
     public IActionResult Get(int courseId)
     {
@@ -50,40 +56,24 @@ public class CoursesController : ControllerBase
         return Ok(course);
     }
 
+    [Authorize(Policy = "StudentEnrolled")]
+    [Authorize(Roles = "Administrator")]
     [HttpGet("{courseId}/students")]
-    [Authorize(Roles = "Administrator,Teacher,Student")]
     public IActionResult GetStudents(int courseId)
     {
-        int? userId = _tokenRepository.GetIdFromToken(User);
-        if (userId is null) return BadRequest("User ID missing from token");
-
-        string? role = _tokenRepository.GetRoleFromToken(User);
-        if (role is null) return BadRequest("User Role missing from token");
-
         var course = _courseRepository.GetCourse(courseId);
         if (course is null) return BadRequest("Course not found");
-
-        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, course.Id, (int)userId, role);
-        if (requirement.Succeed() is false) return Unauthorized();
 
         return Ok(_courseRepository.GetStudents(courseId));
     }
 
+    [Authorize(Policy = "StudentEnrolled")]
+    [Authorize(Roles = "Administrator")]
     [HttpGet("{courseId}/sessions")]
-	[Authorize(Roles = "Administrator,Teacher,Student")]
-	public IActionResult GetSessions(int courseId)
+    public IActionResult GetSessions(int courseId)
     {
-        int? userId = _tokenRepository.GetIdFromToken(User);
-        if (userId is null) return BadRequest("User ID missing from token");
-
-        string? role = _tokenRepository.GetRoleFromToken(User);
-        if (role is null) return BadRequest("User Role missing from token");
-
         var course = _courseRepository.GetCourse(courseId);
         if (course is null) return BadRequest("Course not found");
-
-        IUserEnrolledRequirement requirement = new BridgeEnrolledRequirement(_courseRepository, course.Id, (int)userId, role);
-        if (requirement.Succeed() is false) return Unauthorized();
 
         return Ok(_courseRepository.GetSessions(courseId));
     }
