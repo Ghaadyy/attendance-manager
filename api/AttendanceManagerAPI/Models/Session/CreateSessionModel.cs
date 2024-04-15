@@ -7,12 +7,6 @@ namespace AttendanceManagerAPI.Models;
 public class CreateSessionModel
 {
     [Required]
-    public required int CourseId { get; set; }
-
-    [Required]
-    public required int TeacherId { get; set; }
-
-    [Required]
     public required DateTime StartDate { get; set; }
 
     [Required]
