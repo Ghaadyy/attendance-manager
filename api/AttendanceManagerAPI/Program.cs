@@ -7,8 +7,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Newtonsoft.Json;
 using AttendanceManagerAPI.Models.Token;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<TokenGenerator>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
@@ -17,9 +20,15 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
+builder.Services.AddScoped<IAuthorizationHandler, StudentEnrolledHandler>();
+
+builder.Services.AddSingleton<IAuthorizationEvaluator, CustomAuthorizationEvaluator>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors();
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
@@ -67,7 +76,17 @@ builder.Services.AddDbContext<AttendanceManagerContext>(options =>
     options.UseNpgsql(builder.Configuration["ConnectionStrings:AttendanceManagerDB"]);
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("StudentEnrolled", policy =>
+    {
+        policy.AddRequirements(new StudentEnrolled());
+    });
+});
+
 var app = builder.Build();
+
+app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

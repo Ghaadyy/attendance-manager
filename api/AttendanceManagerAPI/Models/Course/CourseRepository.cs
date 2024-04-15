@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 
 namespace AttendanceManagerAPI.Models;
@@ -92,7 +93,7 @@ public class CourseRepository : ICourseRepository
     public bool CheckIfStudentEnrolled(int courseId, int studentId)
     {
         IEnumerable<User> students = GetStudents(courseId);
-        foreach(User student in students)
+        foreach (User student in students)
         {
             if (student.Id == studentId) return true;
         }
@@ -100,15 +101,26 @@ public class CourseRepository : ICourseRepository
         return false;
     }
 
-	public bool CheckIfTeacherEnrolled(int courseId, int teacherId)
-	{
-		IEnumerable<User> teachers = GetTeachers(courseId);
-		foreach (User teacher in teachers)
-		{
-			if (teacher.Id == teacherId) return true;
-		}
+    public bool CheckIfTeacherEnrolled(int courseId, int teacherId)
+    {
+        IEnumerable<User> teachers = GetTeachers(courseId);
+        foreach (User teacher in teachers)
+        {
+            if (teacher.Id == teacherId) return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
+
+    public IEnumerable<Course> GetCoursesByUser(User user)
+    {
+        var courses = from u in context.Users
+                      join cs in context.CourseStudent on u.Id equals cs.StudentId
+                      join c in context.Courses on cs.CourseId equals c.Id
+                      where cs.StudentId == user.Id
+                      select c;
+
+        return courses;
+    }
 }
 
