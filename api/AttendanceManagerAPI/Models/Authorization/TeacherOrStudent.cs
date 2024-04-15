@@ -6,22 +6,22 @@ using System.Security.Claims;
 
 namespace AttendanceManagerAPI.Models;
 
-public class StudentEnrolled : IAuthorizationRequirement
+public class TeacherOrStudent : IAuthorizationRequirement
 {
 }
 
-public class StudentEnrolledHandler : AuthorizationHandler<StudentEnrolled>
+public class TeacherOrStudentHandler : AuthorizationHandler<TeacherOrStudent>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICourseRepository _courseRepository;
 
-    public StudentEnrolledHandler(IHttpContextAccessor httpContextAccessor, ICourseRepository courseRepository)
+    public TeacherOrStudentHandler(IHttpContextAccessor httpContextAccessor, ICourseRepository courseRepository)
     {
         _httpContextAccessor = httpContextAccessor;
         _courseRepository = courseRepository;
     }
 
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, StudentEnrolled requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, TeacherOrStudent requirement)
     {
         if (context.User.IsInRole("Administrator"))
         {
@@ -42,6 +42,12 @@ public class StudentEnrolledHandler : AuthorizationHandler<StudentEnrolled>
         }
 
         if (_courseRepository.CheckIfStudentEnrolled(courseId, userId))
+        {
+            context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
+
+        if (_courseRepository.CheckIfTeacherEnrolled(courseId, userId))
         {
             context.Succeed(requirement);
             return Task.CompletedTask;

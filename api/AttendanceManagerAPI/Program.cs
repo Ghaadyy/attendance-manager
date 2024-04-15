@@ -12,17 +12,19 @@ using Microsoft.AspNetCore.Authorization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
-
-builder.Services.AddScoped<TokenGenerator>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+// Registering custom services
+builder.Services.AddScoped<TokenGenerator>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
+// Registering Authorization Handlers for policies
 builder.Services.AddScoped<IAuthorizationHandler, StudentEnrolledHandler>();
-
-builder.Services.AddSingleton<IAuthorizationEvaluator, CustomAuthorizationEvaluator>();
+builder.Services.AddScoped<IAuthorizationHandler, TeacherOrStudentHandler>();
+builder.Services.AddScoped<IAuthorizationHandler, IsCourseTeacherHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -81,6 +83,21 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("StudentEnrolled", policy =>
     {
         policy.AddRequirements(new StudentEnrolled());
+    });
+
+    options.AddPolicy("IsCourseTeacher", policy =>
+    {
+        policy.AddRequirements(new IsCourseTeacher());
+    });
+
+    options.AddPolicy("TeacherOrStudent", policy =>
+    {
+        policy.AddRequirements(new TeacherOrStudent());
+    });
+
+    options.AddPolicy("Administrator", policy =>
+    {
+        policy.RequireRole("Administrator");
     });
 });
 

@@ -27,6 +27,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public IActionResult Get()
     {
         if (User.IsInRole("Administrator"))
@@ -44,9 +45,8 @@ public class CoursesController : ControllerBase
         }
     }
 
-    [Authorize(Policy = "StudentEnrolled")]
-    [Authorize(Roles = "Administrator")]
     [HttpGet("{courseId}")]
+    [Authorize(Policy = "TeacherOrStudent")]
     public IActionResult Get(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
@@ -56,9 +56,8 @@ public class CoursesController : ControllerBase
         return Ok(course);
     }
 
-    [Authorize(Policy = "StudentEnrolled")]
-    [Authorize(Roles = "Administrator")]
     [HttpGet("{courseId}/students")]
+    [Authorize(Policy = "TeacherOrStudent")]
     public IActionResult GetStudents(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
@@ -67,9 +66,8 @@ public class CoursesController : ControllerBase
         return Ok(_courseRepository.GetStudents(courseId));
     }
 
-    [Authorize(Policy = "StudentEnrolled")]
-    [Authorize(Roles = "Administrator")]
     [HttpGet("{courseId}/sessions")]
+    [Authorize(Policy = "TeacherOrStudent")]
     public IActionResult GetSessions(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
@@ -99,18 +97,9 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPatch("{courseId}/student/{studentId}")]
-    [Authorize(Roles = "Administrator,Teacher")]
+    [Authorize(Policy = "IsCourseTeacher")]
     public async Task<IActionResult> AddStudent(int courseId, int studentId)
     {
-        int? userId = _tokenRepository.GetIdFromToken(User);
-        if (userId is null) return BadRequest("User ID missing from token");
-
-        string? role = _tokenRepository.GetRoleFromToken(User);
-        if (role is null) return BadRequest("User Role missing from token");
-
-        UserEnrolledRequirement requirement = new TeacherEnrolledRequirement(_courseRepository, courseId, (int)userId, role);
-        if (requirement.Succeed() is false) return Unauthorized();
-
         try
         {
             await _courseRepository.AddStudent(courseId, studentId);
@@ -140,7 +129,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet("{courseId}/teachers")]
-    [Authorize(Roles = "Administrator,Teacher,Student")]
+    [Authorize(Roles = "TeacherOrStudent")]
     public ActionResult<IEnumerable<User>> GetTeachers(int courseId)
     {
         return Ok(_courseRepository.GetTeachers(courseId));
