@@ -44,6 +44,8 @@ public partial class CoursesController : ControllerBase
 
         var session = new Session
         {
+            Name = model.Name,
+            Description = model.Description,
             StartDate = model.StartDate.ToUniversalTime(),
             EndDate = model.EndDate.ToUniversalTime(),
             CourseId = courseId,

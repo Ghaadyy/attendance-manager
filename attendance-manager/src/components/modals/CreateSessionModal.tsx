@@ -6,6 +6,8 @@ type CreateSessionModalProps = { courseId: number };
 function CreateSessionModal({ courseId }: CreateSessionModalProps) {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>();
 
   const { token } = useContext(userContext);
 
@@ -17,6 +19,8 @@ function CreateSessionModal({ courseId }: CreateSessionModalProps) {
         Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
+        name,
+        description,
         courseId,
         startDate,
         endDate,
@@ -75,6 +79,8 @@ function CreateSessionModal({ courseId }: CreateSessionModalProps) {
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="Web dynamique"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
@@ -92,6 +98,8 @@ function CreateSessionModal({ courseId }: CreateSessionModalProps) {
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="Reactive web development"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
 

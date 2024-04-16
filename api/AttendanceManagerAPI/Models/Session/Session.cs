@@ -11,6 +11,12 @@ public class Session
     [Column("id")]
     public int Id { get; set; }
 
+    [Column("name")]
+    public required string Name { get; set; }
+
+    [Column("description")]
+    public required string Description { get; set; }
+
     [ForeignKey("Course")]
     [Column("course_id")]
     public required int CourseId { get; set; }

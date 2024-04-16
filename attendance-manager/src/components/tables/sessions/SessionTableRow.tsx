@@ -1,9 +1,9 @@
 import { toast } from "react-toastify";
 import { Session } from "../../../models/Session";
 
-type TableRowProps = { 
-  session: Session
-  onDelete: (sessionId: number) => void; 
+type TableRowProps = {
+  session: Session;
+  onDelete: (sessionId: number) => void;
 };
 
 function TickIcon() {
@@ -22,26 +22,28 @@ function TickIcon() {
 }
 
 function SessionTableRow({ session, onDelete }: TableRowProps) {
-
   const token = localStorage.getItem("token");
 
   const handleDelete = async () => {
-    const res = await fetch(`http://localhost:8000/api/courses/${session.courseId}/sessions/${session.id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token,
-      },
-    });
+    const res = await fetch(
+      `http://localhost:8000/api/courses/${session.courseId}/sessions/${session.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
 
     if (res.ok) {
       onDelete(session.id);
       toast.success("Session deleted successfully", {
-        toastId: res.status
+        toastId: res.status,
       });
-    }else {
+    } else {
       toast.error("Could not delete session", {
-        toastId: res.status
+        toastId: res.status,
       });
     }
   };
@@ -53,7 +55,7 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
           <div className="flex items-center gap-x-3">
             <div className="grow">
               <span className="block text-sm font-semibold text-gray-800">
-                {session.id}
+                {session.name}
               </span>
             </div>
           </div>
@@ -84,7 +86,7 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
       <td className="h-px w-72 whitespace-nowrap">
         <div className="px-6 py-3">
           <span className="block text-sm font-semibold text-gray-800">
-            Séance de regulière de cours
+            {session.description}
           </span>
         </div>
       </td>
