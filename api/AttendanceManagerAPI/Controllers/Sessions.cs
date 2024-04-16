@@ -15,7 +15,7 @@ public partial class CoursesController : ControllerBase
 {
     [HttpGet("{courseId}/sessions/{sessionId}/students")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public IActionResult GetSessionStudents(int courseId, int sessionId)
+    public ActionResult<IEnumerable<User>> GetSessionStudents(int sessionId)
     {
         var session = _sessionRepository.GetSession(sessionId);
         if (session is null) return BadRequest("Session not valid");
@@ -25,7 +25,7 @@ public partial class CoursesController : ControllerBase
 
     [HttpGet("{courseId}/sessions/{sessionId}")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public IActionResult GetSession(int sessionId)
+    public ActionResult<Session> GetSession(int sessionId)
     {
         var session = _sessionRepository.GetSession(sessionId);
         if (session is null) return BadRequest("Session not valid");
@@ -55,17 +55,17 @@ public partial class CoursesController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("{courseId}/sessions")]
+    [HttpDelete("{courseId}/sessions/{sessionId}")]
     [Authorize(Policy = "IsCourseTeacher")]
-    public async Task<IActionResult> DeleteSession(int sessionId)
+    public async Task<ActionResult<Session>> DeleteSession(int sessionId)
     {
         var session = _sessionRepository.GetSession(sessionId);
 
-        if (session is null) return BadRequest();
+        if (session is null) return NotFound();
 
         await _sessionRepository.DeleteSession(session);
 
-        return Ok();
+        return session;
     }
 
     [HttpPost("{courseId}/sessions/{sessionId}/attendance")]

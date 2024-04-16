@@ -30,7 +30,7 @@ public partial class CoursesController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public IActionResult Get()
+    public ActionResult<IEnumerable<Course>> Get()
     {
         if (User.IsInRole("Administrator"))
             return Ok(_courseRepository.GetCourses());
@@ -49,7 +49,7 @@ public partial class CoursesController : ControllerBase
 
     [HttpGet("{courseId}")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public IActionResult Get(int courseId)
+    public ActionResult<Course> Get(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
 
@@ -60,7 +60,7 @@ public partial class CoursesController : ControllerBase
 
     [HttpGet("{courseId}/students")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public IActionResult GetStudents(int courseId)
+    public ActionResult<IEnumerable<User>> GetStudents(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
         if (course is null) return BadRequest("Course not found");
@@ -70,7 +70,7 @@ public partial class CoursesController : ControllerBase
 
     [HttpGet("{courseId}/sessions")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public IActionResult GetSessions(int courseId)
+    public ActionResult<IEnumerable<Session>> GetSessions(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
         if (course is null) return BadRequest("Course not found");
@@ -111,7 +111,7 @@ public partial class CoursesController : ControllerBase
             return BadRequest();
         }
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpPatch("{courseId}/teacher/{teacherId}")]
@@ -127,7 +127,7 @@ public partial class CoursesController : ControllerBase
             return BadRequest();
         }
 
-        return Ok();
+        return NoContent();
     }
 
     [HttpGet("{courseId}/teachers")]
@@ -139,14 +139,14 @@ public partial class CoursesController : ControllerBase
 
     [HttpDelete("{courseId}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> DeleteCourse(int courseId)
+    public async Task<ActionResult<Course>> DeleteCourse(int courseId)
     {
         var course = _courseRepository.GetCourse(courseId);
 
-        if (course is null) return BadRequest();
+        if (course is null) return NotFound();
 
         await _courseRepository.DeleteCourse(course);
 
-        return Ok();
+        return course;
     }
 }

@@ -33,7 +33,7 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Administrator")]
-    public ActionResult<List<User>> Get()
+    public ActionResult<IEnumerable<User>> Get()
     {
         var users = _userRepository.GetAllUsers();
 
@@ -53,7 +53,7 @@ public class UsersController : ControllerBase
 
     [HttpGet("me")]
     [Authorize]
-    public IActionResult GetUserInfo()
+    public ActionResult<User> GetUserInfo()
     {
         int? userId = _tokenRepository.GetIdFromToken(User);
         if (userId is null) return BadRequest("User ID missing from token");
@@ -167,15 +167,15 @@ public class UsersController : ControllerBase
 
     [HttpDelete("{userId}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> Delete(int userId)
+    public async Task<ActionResult<User>> Delete(int userId)
     {
         var user = _userRepository.GetUserById(userId);
 
-        if (user is null) return BadRequest("User does not exist.");
+        if (user is null) return NotFound("User does not exist.");
 
         await _userRepository.DeleteUser(user);
 
-        return Ok();
+        return user;
     }
 
     [HttpPatch("{userId}/{roleName}")]
@@ -186,6 +186,6 @@ public class UsersController : ControllerBase
 
         if (role is null) return BadRequest();
 
-        return Ok();
+        return NoContent();
     }
 }
