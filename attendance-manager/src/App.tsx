@@ -43,24 +43,23 @@ function App() {
       const { exp } = jwtDecode(storedToken);
       setToken(storedToken);
 
-      // if (!exp || exp < Date.now()) {
-      //   localStorage.removeItem("token");
-      //   setToken(undefined);
-      //   setUser(undefined);
-      // } else
-      // {
-      fetch("http://localhost:8000/api/users/me", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + storedToken,
-        },
-      }).then((res) =>
-        res.json().then((data) => {
-          setUser(data);
-        })
-      );
-      // }
+      if (!exp || exp < Date.now() / 1000) {
+        localStorage.removeItem("token");
+        setToken(undefined);
+        setUser(undefined);
+      } else {
+        fetch("http://localhost:8000/api/users/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + storedToken,
+          },
+        }).then((res) =>
+          res.json().then((data) => {
+            setUser(data);
+          })
+        );
+      }
     }
   }, []);
 
