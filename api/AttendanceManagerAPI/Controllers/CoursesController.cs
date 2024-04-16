@@ -131,7 +131,7 @@ public partial class CoursesController : ControllerBase
     }
 
     [HttpGet("{courseId}/teachers")]
-    [Authorize(Roles = "TeacherOrStudent")]
+    [Authorize(Policy = "TeacherOrStudent")]
     public ActionResult<IEnumerable<User>> GetTeachers(int courseId)
     {
         return Ok(_courseRepository.GetTeachers(courseId));
