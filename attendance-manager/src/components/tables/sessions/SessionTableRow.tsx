@@ -26,7 +26,7 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
   const token = localStorage.getItem("token");
 
   const handleDelete = async () => {
-    const res = await fetch(`http://localhost:8000/api/sessions/${session.id}`, {
+    const res = await fetch(`http://localhost:8000/api/courses/${session.courseId}/sessions/${session.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

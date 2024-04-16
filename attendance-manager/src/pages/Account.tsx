@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { userContext } from "../store/UserContext";
 import { Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 type Inputs = {
   email: string;
@@ -38,7 +39,7 @@ function Account() {
         .filter(({ value }) => value)
     );
 
-    await fetch("http://localhost:8000/api/users/", {
+    const res = await fetch("http://localhost:8000/api/users/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -54,6 +55,16 @@ function Account() {
           .filter(({ value }) => value)
       ),
     });
+
+    if(res.ok){
+      toast.success("Changes saved", {
+        toastId: res.status
+      });
+    } else {
+      toast.error("Could not save changes", {
+        toastId: res.status
+      });
+    }
 
     // console.log(await res.json());
   };
