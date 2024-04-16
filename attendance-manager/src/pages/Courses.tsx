@@ -1,13 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { useContext, useEffect, useState } from "react";
 import Card from "../components/Card";
 import { Course } from "../models/Course";
 import { userContext } from "../store/UserContext";
-import { userContext } from "../store/UserContext";
 
 function Courses() {
-  const { token } = useContext(userContext);
-
   const [courses, setCourses] = useState<Course[]>([]);
 
   const { user, token } = useContext(userContext);
