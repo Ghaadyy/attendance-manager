@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { userContext } from "../../store/UserContext";
 
 type CreateSessionModalProps = { courseId: number };
 
@@ -6,11 +7,14 @@ function CreateSessionModal({ courseId }: CreateSessionModalProps) {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
+  const { token } = useContext(userContext);
+
   const submitHandler = () => {
-    fetch("http://localhost:8000/api/sessions", {
+    fetch(`http://localhost:8000/api/courses/${courseId}/sessions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify({
         courseId,
