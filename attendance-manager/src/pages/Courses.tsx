@@ -14,11 +14,11 @@ function Courses() {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
-      }
+      },
     })
       .then((res) => res.json().then((data) => setCourses(data)))
       .catch((err) => console.log(err));
-  }, []);
+  }, [token]);
 
   return (
     <>

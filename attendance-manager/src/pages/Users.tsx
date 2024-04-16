@@ -14,7 +14,7 @@ function Users() {
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
-      }
+      },
     })
       .then((res) =>
         res.json().then((data: User[]) => {
@@ -22,7 +22,7 @@ function Users() {
         })
       )
       .catch((err) => console.log(err));
-  }, []);
+  }, [token]);
 
   return (
     <>
