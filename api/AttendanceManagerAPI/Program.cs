@@ -94,11 +94,6 @@ builder.Services.AddAuthorization(options =>
     {
         policy.AddRequirements(new TeacherOrStudent());
     });
-
-    options.AddPolicy("Administrator", policy =>
-    {
-        policy.RequireRole("Administrator");
-    });
 });
 
 var app = builder.Build();
