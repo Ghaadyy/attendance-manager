@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 import { User } from "./models/User";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from "jwt-decode";
 
 declare global {
   interface Window {
@@ -31,15 +32,23 @@ declare global {
 }
 
 function App() {
-  const storedToken = localStorage.getItem("token");
-
+  const stToken = localStorage.getItem("token");
   const [user, setUser] = useState<User>();
-  const [token, setToken] = useState<string | undefined>(
-    storedToken ?? undefined
-  );
+  const [token, setToken] = useState<string | undefined>(stToken ?? undefined);
 
   useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+
     if (storedToken) {
+      const { exp } = jwtDecode(storedToken);
+      setToken(storedToken);
+
+      // if (!exp || exp < Date.now()) {
+      //   localStorage.removeItem("token");
+      //   setToken(undefined);
+      //   setUser(undefined);
+      // } else
+      // {
       fetch("http://localhost:8000/api/users/me", {
         method: "GET",
         headers: {
@@ -51,6 +60,7 @@ function App() {
           setUser(data);
         })
       );
+      // }
     }
   }, []);
 
