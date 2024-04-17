@@ -41,13 +41,13 @@ public class TeacherOrStudentHandler : AuthorizationHandler<TeacherOrStudent>
             return Task.CompletedTask;
         }
 
-        if (_courseRepository.CheckIfStudentEnrolled(courseId, userId))
+        if (context.User.IsInRole("Student") && _courseRepository.CheckIfStudentEnrolled(courseId, userId))
         {
             context.Succeed(requirement);
             return Task.CompletedTask;
         }
 
-        if (_courseRepository.CheckIfTeacherEnrolled(courseId, userId))
+        if (context.User.IsInRole("Teacher") && _courseRepository.CheckIfTeacherEnrolled(courseId, userId))
         {
             context.Succeed(requirement);
             return Task.CompletedTask;
