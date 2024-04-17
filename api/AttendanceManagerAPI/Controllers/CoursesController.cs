@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AttendanceManagerAPI.Models;
 using AttendanceManagerAPI.Models.Token;
-using AttendanceManagerAPI.Models.Requirements;
 using System.Security.Claims;
 
 namespace AttendanceManagerAPI.Controllers;
