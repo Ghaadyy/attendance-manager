@@ -1,12 +1,38 @@
-import { Link } from "react-router-dom";
 import { User } from "../../../models/User";
 import UserTableRow from "./UserTableRow";
+import { useContext, useEffect, useState } from "react";
+import { userContext } from "../../../store/UserContext";
 
-type TableProps = {
-  users: User[];
-};
+function UsersTable() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [pageIndex, setPageIndex] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
-function UsersTable({ users }: TableProps) {
+  const { token } = useContext(userContext);
+
+  useEffect(() => {
+    const pageSize = 5;
+
+    fetch(
+      `http://localhost:8000/api/users?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    )
+      .then((res) =>
+        res.json().then((data) => {
+          const { users, hasMore } = data;
+          setUsers(users);
+          setHasMore(hasMore);
+        })
+      )
+      .catch((err) => console.log(err));
+  }, [token, pageIndex]);
+
   return (
     <>
       {/* <!-- Table Section --> */}
@@ -25,32 +51,6 @@ function UsersTable({ users }: TableProps) {
                     <p className="text-sm text-gray-600">
                       Add users, edit and more.
                     </p>
-                  </div>
-
-                  <div>
-                    <div className="inline-flex gap-x-2">
-                      <Link
-                        to="/users/create"
-                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                      >
-                        <svg
-                          className="flex-shrink-0 size-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path d="M5 12h14" />
-                          <path d="M12 5v14" />
-                        </svg>
-                        Add user
-                      </Link>
-                    </div>
                   </div>
                 </div>
                 {/* <!-- End Header --> */}
@@ -122,10 +122,14 @@ function UsersTable({ users }: TableProps) {
                     </p>
                   </div>
 
-                  {/* <div>
+                  <div>
                     <div className="inline-flex gap-x-2">
                       <button
                         type="button"
+                        disabled={pageIndex === 1}
+                        onClick={() =>
+                          setPageIndex((idx) => (idx - 1 === 0 ? 1 : idx - 1))
+                        }
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
                       >
                         <svg
@@ -147,6 +151,8 @@ function UsersTable({ users }: TableProps) {
 
                       <button
                         type="button"
+                        disabled={!hasMore}
+                        onClick={() => setPageIndex((idx) => idx + 1)}
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
                       >
                         Next
@@ -166,7 +172,7 @@ function UsersTable({ users }: TableProps) {
                         </svg>
                       </button>
                     </div>
-                  </div> */}
+                  </div>
                 </div>
                 {/* <!-- End Footer --> */}
               </div>

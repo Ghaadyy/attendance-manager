@@ -58,16 +58,6 @@ public class CourseRepository : ICourseRepository
         return context.Courses;
     }
 
-    public IEnumerable<Session> GetSessions(int courseId)
-    {
-        var sessions = from course in context.Courses
-                       join session in context.Sessions on course.Id equals session.CourseId
-                       where course.Id == courseId
-                       select session;
-
-        return sessions;
-    }
-
     public IEnumerable<User> GetStudents(int courseId)
     {
         var students = from cs in context.CourseStudent

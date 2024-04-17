@@ -40,6 +40,29 @@ public class SessionRepository : ISessionRepository
         return context.Sessions;
     }
 
+    public IEnumerable<Session> GetSessions(int courseId)
+    {
+        var sessions = from course in context.Courses
+                       join session in context.Sessions on course.Id equals session.CourseId
+                       where course.Id == courseId
+                       select session;
+
+        return sessions;
+    }
+
+    public IEnumerable<Session> GetSessions(int courseId, int pageIndex, int pageSize)
+    {
+        var sessions = (from course in context.Courses
+                        join session in context.Sessions on course.Id equals session.CourseId
+                        where course.Id == courseId
+                        select session).Skip((pageIndex - 1) * pageSize).Take(pageSize);
+
+        return sessions;
+    }
+
+    public bool HasMore(int courseId, int pageIndex, int pageSize)
+        => (pageIndex * pageSize) < GetSessions(courseId).Count();
+
     public IEnumerable<User> GetStudents(int sessionId)
     {
         var students = from att in context.Attendance

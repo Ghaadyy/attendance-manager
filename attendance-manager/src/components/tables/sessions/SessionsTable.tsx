@@ -1,10 +1,43 @@
+import { useContext, useEffect, useState } from "react";
 import { Session } from "../../../models/Session";
 import CreateSessionModal from "../../modals/CreateSessionModal";
 import TableRow from "./SessionTableRow";
+import { userContext } from "../../../store/UserContext";
 
-type TableProps = { sessions: Session[]; courseId: number; onDeleteSession: (sessionId: number) => void };
+type TableProps = {
+  courseId: number;
+};
 
-function SessionsTable({ sessions, courseId, onDeleteSession }: TableProps) {
+function SessionsTable({ courseId }: TableProps) {
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [pageIndex, setPageIndex] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+
+  const { token } = useContext(userContext);
+
+  useEffect(() => {
+    const pageSize = 5;
+
+    fetch(
+      `http://localhost:8000/api/courses/${courseId}/sessions?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    )
+      .then((res) =>
+        res.json().then((data) => {
+          const { sessions, hasMore } = data;
+          setSessions(sessions);
+          setHasMore(hasMore);
+        })
+      )
+      .catch((err) => console.log(err));
+  }, [token, courseId, pageIndex]);
+
   return (
     <>
       <CreateSessionModal courseId={courseId} />
@@ -106,7 +139,17 @@ function SessionsTable({ sessions, courseId, onDeleteSession }: TableProps) {
 
                   <tbody className="divide-y divide-gray-200">
                     {sessions.map((s) => (
-                      <TableRow key={s.id} session={s} onDelete={onDeleteSession}/>
+                      <TableRow
+                        key={s.id}
+                        session={s}
+                        onDelete={(sessionId) =>
+                          setSessions((prevSessions) =>
+                            prevSessions.filter(
+                              (session) => session.id !== sessionId
+                            )
+                          )
+                        }
+                      />
                     ))}
                   </tbody>
                 </table>
@@ -123,10 +166,14 @@ function SessionsTable({ sessions, courseId, onDeleteSession }: TableProps) {
                     </p>
                   </div>
 
-                  {/* <div>
+                  <div>
                     <div className="inline-flex gap-x-2">
                       <button
                         type="button"
+                        disabled={pageIndex === 1}
+                        onClick={() =>
+                          setPageIndex((idx) => (idx - 1 === 0 ? 1 : idx - 1))
+                        }
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
                       >
                         <svg
@@ -148,6 +195,8 @@ function SessionsTable({ sessions, courseId, onDeleteSession }: TableProps) {
 
                       <button
                         type="button"
+                        disabled={!hasMore}
+                        onClick={() => setPageIndex((idx) => idx + 1)}
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
                       >
                         Next
@@ -167,7 +216,7 @@ function SessionsTable({ sessions, courseId, onDeleteSession }: TableProps) {
                         </svg>
                       </button>
                     </div>
-                  </div> */}
+                  </div>
                 </div>
                 {/* <!-- End Footer --> */}
               </div>

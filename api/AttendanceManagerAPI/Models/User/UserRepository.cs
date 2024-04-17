@@ -17,6 +17,18 @@ public class UserRepository : IUserRepository
         return context.Users.ToList();
     }
 
+    public bool HasMore(int pageIndex, int pageSize)
+        => (pageIndex * pageSize) < context.Users.Count();
+
+    public IEnumerable<User> GetUsers(int pageIndex, int pageSize)
+    {
+        var users = context.Users
+          .Skip((pageIndex - 1) * pageSize)
+          .Take(pageSize);
+
+        return users;
+    }
+
     public User? GetUserById(int userId)
     {
         var user = (from u in context.Users

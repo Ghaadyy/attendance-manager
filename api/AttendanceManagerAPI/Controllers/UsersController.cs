@@ -33,11 +33,18 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Administrator")]
-    public ActionResult<IEnumerable<User>> Get()
+    public ActionResult<PaginatedUserList> Get([FromQuery] int? pageIndex, [FromQuery] int? pageSize)
     {
-        var users = _userRepository.GetAllUsers();
+        if (pageIndex is null || pageSize is null)
+            return Ok(_userRepository.GetAllUsers());
 
-        return Ok(users);
+        var users = _userRepository.GetUsers(pageIndex.Value, pageSize.Value);
+
+        return Ok(new PaginatedUserList
+        {
+            users = users,
+            hasMore = _userRepository.HasMore(pageIndex.Value, pageSize.Value)
+        });
     }
 
     [HttpGet("{userId}")]

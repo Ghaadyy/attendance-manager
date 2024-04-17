@@ -70,12 +70,20 @@ public partial class CoursesController : ControllerBase
 
     [HttpGet("{courseId}/sessions")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public ActionResult<IEnumerable<Session>> GetSessions(int courseId)
+    public ActionResult<PaginatedSessionList> GetSessions(int courseId, [FromQuery] int? pageIndex, [FromQuery] int? pageSize)
     {
-        var course = _courseRepository.GetCourse(courseId);
-        if (course is null) return BadRequest("Course not found");
+        if (pageIndex is null || pageSize is null)
+        {
+            var course = _courseRepository.GetCourse(courseId);
+            if (course is null) return BadRequest("Course not found");
+            else return BadRequest("Invalid query parameters");
+        }
 
-        return Ok(_courseRepository.GetSessions(courseId));
+        return Ok(new PaginatedSessionList
+        {
+            sessions = _sessionRepository.GetSessions(courseId, pageIndex.Value, pageSize.Value),
+            hasMore = _sessionRepository.HasMore(courseId, pageIndex.Value, pageSize.Value)
+        });
     }
 
     // ADD TEACHER HERE ALSO
