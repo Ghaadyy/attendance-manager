@@ -102,12 +102,6 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
         <div className="px-6 py-1.5 inline-flex flex-col gap-2">
           <div className="inline-flex rounded-lg shadow-sm">
             <button
-              type="button"
-              className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              Edit
-            </button>
-            <button
               onClick={handleDelete}
               type="button"
               className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"

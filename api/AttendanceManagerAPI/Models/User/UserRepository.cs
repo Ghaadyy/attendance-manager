@@ -126,4 +126,20 @@ public class UserRepository : IUserRepository
         patchDoc.ApplyTo(user);
         await context.SaveChangesAsync();
     }
+
+    public bool HasMore(Course course, int pageIndex, int pageSize)
+        => (pageIndex * pageSize) < (from u in context.Users
+                                     join cs in context.CourseStudent on u.Id equals cs.StudentId
+                                     where cs.CourseId == course.Id
+                                     select u).Count();
+
+    public IEnumerable<User> GetStudents(Course course, int pageIndex, int pageSize)
+    {
+        var users = (from u in context.Users
+                     join cs in context.CourseStudent on u.Id equals cs.StudentId
+                     where cs.CourseId == course.Id
+                     select u).Skip((pageIndex - 1) * pageSize).Take(pageSize);
+
+        return users;
+    }
 }

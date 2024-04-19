@@ -26,9 +26,9 @@ function StudentsTable({ courseId }: { courseId: number }) {
     )
       .then((res) =>
         res.json().then((data) => {
-          const users = data;
+          const { users, hasMore } = data;
           setUsers(users);
-          setHasMore(false);
+          setHasMore(hasMore);
         })
       )
       .catch((err) => console.log(err));
