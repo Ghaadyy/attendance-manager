@@ -38,6 +38,10 @@ function StudentsTable({ courseId }: { courseId: number }) {
     setUsers((users) => [...users, student]);
   };
 
+  const onDelete = (studentId: number) => {
+    setUsers((users) => users.filter((u) => u.id !== studentId));
+  };
+
   return (
     <>
       <AddStudentModal courseId={courseId} onCreate={onAddStudent} />
@@ -138,7 +142,12 @@ function StudentsTable({ courseId }: { courseId: number }) {
 
                   <tbody className="divide-y divide-gray-200">
                     {users.map((user) => (
-                      <StudentTableRow key={user.id} user={user} />
+                      <StudentTableRow
+                        key={user.id}
+                        user={user}
+                        courseId={courseId}
+                        onDelete={onDelete}
+                      />
                     ))}
                   </tbody>
                 </table>

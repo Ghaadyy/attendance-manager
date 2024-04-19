@@ -31,6 +31,19 @@ public class CourseRepository : ICourseRepository
         await context.SaveChangesAsync();
     }
 
+    public async Task RemoveStudent(int courseId, User user)
+    {
+        var cs = context.CourseStudent
+          .Where(cs => cs.CourseId == courseId && user.Id == cs.StudentId)
+          .FirstOrDefault();
+
+        if (cs is null) return;
+
+        context.CourseStudent.Remove(cs);
+
+        await context.SaveChangesAsync();
+    }
+
     public async Task AddTeacher(int courseId, int teacherId)
     {
         context.CourseTeacher.Add(new CourseTeacher

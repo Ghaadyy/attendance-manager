@@ -1,8 +1,15 @@
+import { useContext } from "react";
+import { toast } from "react-toastify";
 import { User } from "../../../models/User";
+import { userContext } from "../../../store/UserContext";
 
-type TableRowProps = { user: User };
+type TableRowProps = {
+  user: User;
+  onDelete: (userId: number) => void;
+  courseId: number;
+};
 
-function StudentTableRow({ user }: TableRowProps) {
+function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
   const {
     firstName,
     lastName,
@@ -11,7 +18,34 @@ function StudentTableRow({ user }: TableRowProps) {
     birthDate,
     phoneNumber,
     bloodType,
+    id: studentId,
   } = user;
+
+  const { token } = useContext(userContext);
+
+  const handleDelete = async () => {
+    const res = await fetch(
+      `http://localhost:8000/api/courses/${courseId}/student/${studentId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    if (res.ok) {
+      onDelete(studentId);
+      toast.success("Student removed successfully", {
+        toastId: res.status,
+      });
+    } else {
+      toast.error("Could not remove student", {
+        toastId: res.status,
+      });
+    }
+  };
 
   return (
     <tr>
@@ -56,6 +90,7 @@ function StudentTableRow({ user }: TableRowProps) {
           <div className="inline-flex rounded-lg shadow-sm">
             <button
               type="button"
+              onClick={handleDelete}
               className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
             >
               Remove

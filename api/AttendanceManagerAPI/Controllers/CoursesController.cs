@@ -122,6 +122,23 @@ public partial class CoursesController : ControllerBase
         }
     }
 
+    [HttpDelete("{courseId}/student/{studentId}")]
+    [Authorize(Policy = "IsCourseTeacher")]
+    public async Task<ActionResult<User>> RemoveStudent(int courseId, int studentId)
+    {
+        try
+        {
+            var user = _userRepository.GetUserById(studentId);
+            if (user is null) return NotFound("User with this ID was not found.");
+            await _courseRepository.RemoveStudent(courseId, user);
+            return Ok(user);
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
+
     [HttpPatch("{courseId}/teacher/{teacherId}")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> AddTeacher(int courseId, int teacherId)
