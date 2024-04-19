@@ -2,6 +2,7 @@ import { User } from "../../../models/User";
 import { useContext, useEffect, useState } from "react";
 import { userContext } from "../../../store/UserContext";
 import StudentTableRow from "./StudentTableRow";
+import AddStudentModal from "../../modals/AddStudentModal";
 
 function StudentsTable({ courseId }: { courseId: number }) {
   const [users, setUsers] = useState<User[]>([]);
@@ -33,8 +34,13 @@ function StudentsTable({ courseId }: { courseId: number }) {
       .catch((err) => console.log(err));
   }, [token, pageIndex, courseId]);
 
+  const onAddStudent = (student: User) => {
+    setUsers((users) => [...users, student]);
+  };
+
   return (
     <>
+      <AddStudentModal courseId={courseId} onCreate={onAddStudent} />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}
@@ -58,7 +64,7 @@ function StudentsTable({ courseId }: { courseId: number }) {
                       <button
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                         type="button"
-                        data-hs-overlay="#hs-basic-modal"
+                        data-hs-overlay="#add-student-modal"
                       >
                         <svg
                           className="flex-shrink-0 size-4"

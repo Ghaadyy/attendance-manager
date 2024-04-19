@@ -10,7 +10,7 @@ public interface ICourseRepository
     Task DeleteCourse(Course course);
     IEnumerable<User> GetStudents(int courseId);
     IEnumerable<User> GetTeachers(int courseId);
-    Task AddStudent(int courseId, int studentId);
+    Task AddStudent(int courseId, User user);
     Task AddTeacher(int courseId, int teacherId);
     bool CheckIfStudentEnrolled(int courseId, int studentId);
     bool CheckIfTeacherEnrolled(int courseId, int teacherId);

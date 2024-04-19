@@ -105,20 +105,21 @@ public partial class CoursesController : ControllerBase
         return Ok();
     }
 
-    [HttpPatch("{courseId}/student/{studentId}")]
+    [HttpPatch("{courseId}/student/{studentUsername}")]
     [Authorize(Policy = "IsCourseTeacher")]
-    public async Task<IActionResult> AddStudent(int courseId, int studentId)
+    public async Task<ActionResult<User>> AddStudent(int courseId, string studentUsername)
     {
         try
         {
-            await _courseRepository.AddStudent(courseId, studentId);
+            var user = _userRepository.GetByUserName(studentUsername);
+            if (user is null) return NotFound("User with this username was not found.");
+            await _courseRepository.AddStudent(courseId, user);
+            return Ok(user);
         }
         catch
         {
             return BadRequest();
         }
-
-        return NoContent();
     }
 
     [HttpPatch("{courseId}/teacher/{teacherId}")]

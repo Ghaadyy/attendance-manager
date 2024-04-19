@@ -20,12 +20,12 @@ public class CourseRepository : ICourseRepository
         return course.Id;
     }
 
-    public async Task AddStudent(int courseId, int studentId)
+    public async Task AddStudent(int courseId, User user)
     {
         context.CourseStudent.Add(new CourseStudent
         {
             CourseId = courseId,
-            StudentId = studentId
+            StudentId = user.Id
         });
 
         await context.SaveChangesAsync();
