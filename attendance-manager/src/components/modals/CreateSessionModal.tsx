@@ -1,10 +1,14 @@
 import { useContext, useState } from "react";
 import { userContext } from "../../store/UserContext";
 import { toast } from "react-toastify";
+import { Session } from "../../models/Session";
 
-type CreateSessionModalProps = { courseId: number };
+type CreateSessionModalProps = {
+  courseId: number;
+  onCreate: (session: Session) => void;
+};
 
-function CreateSessionModal({ courseId }: CreateSessionModalProps) {
+function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -17,7 +21,7 @@ function CreateSessionModal({ courseId }: CreateSessionModalProps) {
     setEndDate("");
     setName("");
     setDescription("");
-  }
+  };
 
   const submitHandler = async () => {
     await fetch(`http://localhost:8000/api/courses/${courseId}/sessions`, {
@@ -32,23 +36,28 @@ function CreateSessionModal({ courseId }: CreateSessionModalProps) {
         startDate,
         endDate,
       }),
-    }).then(async (res) =>  { 
-        if(res.ok){
+    })
+      .then(async (res) => {
+        if (res.ok) {
           resetForms();
           toast.success("Session Created", {
-            toastId: res.status
+            toastId: res.status,
           });
+
+          const session: Session = await res.json();
+
+          onCreate(session);
         } else {
           toast.error(await res.text(), {
-            toastId: res.status
-          })
-        } 
-    })
-    .catch(() => {
-      toast.error("Could not send request", {
-        toastId: 500
+            toastId: res.status,
+          });
+        }
       })
-    });
+      .catch(() => {
+        toast.error("Could not send request", {
+          toastId: 500,
+        });
+      });
   };
 
   return (

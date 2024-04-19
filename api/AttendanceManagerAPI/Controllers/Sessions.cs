@@ -34,7 +34,7 @@ public partial class CoursesController : ControllerBase
 
     [HttpPost("{courseId}/sessions")]
     [Authorize(Policy = "IsCourseTeacher")]
-    public async Task<IActionResult> CreateSession(int courseId, [FromBody] CreateSessionModel model)
+    public async Task<ActionResult<Session>> CreateSession(int courseId, [FromBody] CreateSessionModel model)
     {
         if (model.StartDate >= model.EndDate) return BadRequest("End Date should be bigger than Start Date");
 
@@ -53,7 +53,7 @@ public partial class CoursesController : ControllerBase
 
         await _sessionRepository.AddSession(session);
 
-        return Ok();
+        return Ok(session);
     }
 
     [HttpDelete("{courseId}/sessions/{sessionId}")]

@@ -2,7 +2,7 @@ import { User } from "../../../models/User";
 
 type TableRowProps = { user: User };
 
-function UserTableRow({ user }: TableRowProps) {
+function StudentTableRow({ user }: TableRowProps) {
   const {
     firstName,
     lastName,
@@ -58,13 +58,7 @@ function UserTableRow({ user }: TableRowProps) {
               type="button"
               className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
             >
-              Edit
-            </button>
-            <button
-              type="button"
-              className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              Delete
+              Remove
             </button>
           </div>
         </div>
@@ -73,4 +67,4 @@ function UserTableRow({ user }: TableRowProps) {
   );
 }
 
-export default UserTableRow;
+export default StudentTableRow;
