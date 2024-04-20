@@ -18,6 +18,12 @@ function AddStudentModal({ courseId, onCreate }: AddStudentModalProps) {
   };
 
   const submitHandler = async () => {
+    if (username === "") {
+      toast.error("Username required", {
+        toastId: 400
+      });
+      return;
+    }
     await fetch(
       `http://localhost:8000/api/courses/${courseId}/student/${username}`,
       {
