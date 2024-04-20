@@ -2,6 +2,7 @@ import { User } from "../../../models/User";
 import UserTableRow from "./UserTableRow";
 import { useContext, useEffect, useState } from "react";
 import { userContext } from "../../../store/UserContext";
+import AddUserModal from "../../modals/AddRoleModal";
 
 function UsersTable() {
   const [users, setUsers] = useState<User[]>([]);
@@ -38,6 +39,7 @@ function UsersTable() {
 
   return (
     <>
+    <AddUserModal />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}
@@ -54,6 +56,33 @@ function UsersTable() {
                     <p className="text-sm text-gray-600">
                       Add users, edit and more.
                     </p>
+                  </div>
+
+                  <div>
+                    <div className="inline-flex gap-x-2">
+                      <button
+                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                        type="button"
+                        data-hs-overlay="#hs-basic-modal"
+                      >
+                        <svg
+                          className="flex-shrink-0 size-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M5 12h14" />
+                          <path d="M12 5v14" />
+                        </svg>
+                        Add Role
+                      </button>
+                    </div>
                   </div>
                 </div>
                 {/* <!-- End Header --> */}
