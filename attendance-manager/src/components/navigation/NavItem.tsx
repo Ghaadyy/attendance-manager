@@ -1,3 +1,4 @@
+import { HSOverlay } from "preline/preline";
 import { NavLink } from "react-router-dom";
 
 type NavItemProps = {
@@ -15,6 +16,9 @@ function NavItem({ name, path }: NavItemProps) {
           }`
         }
         to={path}
+        onClick={() =>
+          HSOverlay.close(document.getElementById("application-sidebar")!)
+        }
       >
         {name}
       </NavLink>
