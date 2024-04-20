@@ -95,6 +95,8 @@ public partial class CoursesController : ControllerBase
         if (_courseRepository.CheckIfStudentEnrolled(session.CourseId, userId.Value) is false)
             return BadRequest("Student not enrolled in the course");
 
+        _sessionRepository.AddStudent(session, userId.Value);
+
         return Ok();
     }
 
@@ -112,6 +114,8 @@ public partial class CoursesController : ControllerBase
 
         if (_courseRepository.CheckIfStudentEnrolled(session.CourseId, userId) is false)
             return BadRequest("Student not enrolled in the course");
+
+        _sessionRepository.AddStudent(session, userId);
 
         return Ok();
     }

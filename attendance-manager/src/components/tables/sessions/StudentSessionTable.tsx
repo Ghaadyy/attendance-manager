@@ -40,7 +40,7 @@ function StudentSessionTable({ courseId, sessionId }: TableProps) {
         })
       )
       .catch((err) => console.log(err));
-  }, [token, pageIndex]);
+  }, [token, pageIndex, courseId, sessionId]);
 
   return (
     <>
