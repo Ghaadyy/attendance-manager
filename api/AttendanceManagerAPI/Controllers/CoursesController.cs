@@ -76,7 +76,7 @@ public partial class CoursesController : ControllerBase
         return Ok(new PaginatedUserList
         {
             users = _userRepository.GetStudents(course, pageIndex.Value, pageSize.Value),
-            hasMore = _userRepository.HasMore(course, pageIndex.Value, pageSize.Value)
+            hasMore = _userRepository.HasMoreStudents(course, pageIndex.Value, pageSize.Value)
         });
     }
 
@@ -156,27 +156,55 @@ public partial class CoursesController : ControllerBase
         }
     }
 
-    [HttpPatch("{courseId}/teacher/{teacherId}")]
+    [HttpPatch("{courseId}/teacher/{teacherUsername}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> AddTeacher(int courseId, int teacherId)
+    public async Task<IActionResult> AddTeacher(int courseId, string teacherUsername)
     {
         try
         {
-            await _courseRepository.AddTeacher(courseId, teacherId);
+            var user = _userRepository.GetByUserName(teacherUsername);
+            if (user is null) return NotFound("Teacher not found.");
+            if (_courseRepository.CheckIfTeacherEnrolled(courseId, user.Id))
+                return BadRequest("Teacher already teaching this course.");
+            await _courseRepository.AddTeacher(courseId, user.Id);
+            return Ok(user);
         }
         catch
         {
             return BadRequest();
         }
-
-        return NoContent();
     }
 
     [HttpGet("{courseId}/teachers")]
     [Authorize(Policy = "TeacherOrStudent")]
+    public ActionResult<PaginatedUserList> GetTeachers(int courseId, [FromQuery] int? pageSize, [FromQuery] int? pageIndex)
+    {
+        Course? course;
+        if (pageIndex is null || pageSize is null)
+        {
+            course = _courseRepository.GetCourse(courseId);
+            if (course is null) return BadRequest("Course not found");
+            else return BadRequest("Invalid query parameters");
+        }
+
+        course = _courseRepository.GetCourse(courseId);
+        if (course is null) return BadRequest("Course not found");
+
+        return Ok(new PaginatedUserList
+        {
+            users = _userRepository.GetTeachers(course, pageIndex.Value, pageSize.Value),
+            hasMore = _userRepository.HasMoreTeachers(course, pageIndex.Value, pageSize.Value)
+        });
+    }
+
+    [HttpGet("{courseId}/teachers/all")]
+    [Authorize(Policy = "TeacherOrStudent")]
     public ActionResult<IEnumerable<User>> GetTeachers(int courseId)
     {
-        return Ok(_courseRepository.GetTeachers(courseId));
+        var course = _courseRepository.GetCourse(courseId);
+        if (course is null) return NotFound("Course not found");
+
+        return Ok(_courseRepository.GetTeachers(course.Id));
     }
 
     [HttpDelete("{courseId}")]

@@ -127,9 +127,15 @@ public class UserRepository : IUserRepository
         await context.SaveChangesAsync();
     }
 
-    public bool HasMore(Course course, int pageIndex, int pageSize)
+    public bool HasMoreStudents(Course course, int pageIndex, int pageSize)
         => (pageIndex * pageSize) < (from u in context.Users
                                      join cs in context.CourseStudent on u.Id equals cs.StudentId
+                                     where cs.CourseId == course.Id
+                                     select u).Count();
+
+    public bool HasMoreTeachers(Course course, int pageIndex, int pageSize)
+        => (pageIndex * pageSize) < (from u in context.Users
+                                     join cs in context.CourseTeacher on u.Id equals cs.TeacherId
                                      where cs.CourseId == course.Id
                                      select u).Count();
 
@@ -137,6 +143,16 @@ public class UserRepository : IUserRepository
     {
         var users = (from u in context.Users
                      join cs in context.CourseStudent on u.Id equals cs.StudentId
+                     where cs.CourseId == course.Id
+                     select u).Skip((pageIndex - 1) * pageSize).Take(pageSize);
+
+        return users;
+    }
+
+    public IEnumerable<User> GetTeachers(Course course, int pageIndex, int pageSize)
+    {
+        var users = (from u in context.Users
+                     join cs in context.CourseTeacher on u.Id equals cs.TeacherId
                      where cs.CourseId == course.Id
                      select u).Skip((pageIndex - 1) * pageSize).Take(pageSize);
 
