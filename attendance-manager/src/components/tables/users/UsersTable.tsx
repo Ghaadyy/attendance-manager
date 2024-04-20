@@ -33,6 +33,9 @@ function UsersTable() {
       .catch((err) => console.log(err));
   }, [token, pageIndex]);
 
+  const onDelete = (userId: number) =>
+    setUsers((users) => users.filter((u) => u.id !== userId));
+
   return (
     <>
       {/* <!-- Table Section --> */}
@@ -105,7 +108,11 @@ function UsersTable() {
 
                   <tbody className="divide-y divide-gray-200">
                     {users.map((user) => (
-                      <UserTableRow key={user.id} user={user} />
+                      <UserTableRow
+                        key={user.id}
+                        user={user}
+                        onDelete={onDelete}
+                      />
                     ))}
                   </tbody>
                 </table>

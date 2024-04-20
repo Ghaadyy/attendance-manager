@@ -24,6 +24,7 @@ import { User } from "./models/User";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
+import EditUser from "./pages/EditUser";
 
 declare global {
   interface Window {
@@ -100,6 +101,10 @@ function App() {
         {
           path: "users/create",
           element: <CreateUser />,
+        },
+        {
+          path: "users/edit",
+          element: <EditUser />,
         },
       ],
     },

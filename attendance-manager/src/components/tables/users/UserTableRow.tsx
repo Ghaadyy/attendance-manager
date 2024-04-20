@@ -1,8 +1,14 @@
+import { Link } from "react-router-dom";
 import { User } from "../../../models/User";
+import { useContext } from "react";
+import { userContext } from "../../../store/UserContext";
+import { toast } from "react-toastify";
 
-type TableRowProps = { user: User };
+type TableRowProps = { user: User; onDelete: (userId: number) => void };
 
-function UserTableRow({ user }: TableRowProps) {
+function UserTableRow({ user, onDelete }: TableRowProps) {
+  const { token } = useContext(userContext);
+
   const {
     firstName,
     lastName,
@@ -12,6 +18,27 @@ function UserTableRow({ user }: TableRowProps) {
     phoneNumber,
     bloodType,
   } = user;
+
+  const handleDelete = async () => {
+    const res = await fetch(`http://localhost:8000/api/users/${user.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+
+    if (res.ok) {
+      onDelete(user.id);
+      toast.success("User deleted successfully", {
+        toastId: res.status,
+      });
+    } else {
+      toast.error("Could not delete user", {
+        toastId: res.status,
+      });
+    }
+  };
 
   return (
     <tr>
@@ -54,14 +81,17 @@ function UserTableRow({ user }: TableRowProps) {
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-1.5">
           <div className="inline-flex rounded-lg shadow-sm">
-            <button
+            <Link
               type="button"
+              to={`/users/edit`}
+              state={{ user }}
               className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
             >
               Edit
-            </button>
+            </Link>
             <button
               type="button"
+              onClick={handleDelete}
               className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
             >
               Delete
