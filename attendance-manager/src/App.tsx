@@ -25,6 +25,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
 import EditUser from "./pages/EditUser";
+import SessionPage from "./pages/Session";
 
 declare global {
   interface Window {
@@ -93,6 +94,10 @@ function App() {
         {
           path: "course/:courseId",
           element: <Course />,
+        },
+        {
+          path: "course/:courseId/session/:sessionId",
+          element: <SessionPage />,
         },
         {
           path: "course/create",

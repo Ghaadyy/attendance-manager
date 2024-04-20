@@ -124,8 +124,11 @@ public partial class CoursesController : ControllerBase
     {
         try
         {
+
             var user = _userRepository.GetByUserName(studentUsername);
             if (user is null) return NotFound("Student not found.");
+            if (_courseRepository.CheckIfStudentEnrolled(courseId, user.Id))
+                return BadRequest("Student already enrolled in course.");
             await _courseRepository.AddStudent(courseId, user);
             return Ok(user);
         }

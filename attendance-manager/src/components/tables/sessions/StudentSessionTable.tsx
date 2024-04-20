@@ -1,15 +1,18 @@
 import { useContext, useEffect, useState } from "react";
-import { Session } from "../../../models/Session";
-import CreateSessionModal from "../../modals/CreateSessionModal";
-import TableRow from "./SessionTableRow";
 import { userContext } from "../../../store/UserContext";
+import StudentSessionTableRow from "./StudentSessionTableRow";
+import { User } from "../../../models/User";
 
 type TableProps = {
   courseId: number;
+  sessionId: number;
 };
 
-function SessionsTable({ courseId }: TableProps) {
-  const [sessions, setSessions] = useState<Session[]>([]);
+function StudentSessionTable({ courseId, sessionId }: TableProps) {
+  const [userData, setUserData] = useState<{ status: boolean; user: User }[]>(
+    []
+  );
+
   const [pageIndex, setPageIndex] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
@@ -19,7 +22,7 @@ function SessionsTable({ courseId }: TableProps) {
     const pageSize = 5;
 
     fetch(
-      `http://localhost:8000/api/courses/${courseId}/sessions?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      `http://localhost:8000/api/courses/${courseId}/sessions/${sessionId}/students?pageSize=${pageSize}&pageIndex=${pageIndex}`,
       {
         method: "GET",
         headers: {
@@ -30,21 +33,17 @@ function SessionsTable({ courseId }: TableProps) {
     )
       .then((res) =>
         res.json().then((data) => {
-          const { sessions, hasMore } = data;
-          setSessions(sessions);
+          const { users, hasMore } = data;
+          console.log(users);
+          setUserData(users);
           setHasMore(hasMore);
         })
       )
       .catch((err) => console.log(err));
-  }, [token, courseId, pageIndex]);
-
-  const onCreateSession = (session: Session) => {
-    setSessions((sessions) => [...sessions, session]);
-  };
+  }, [token, pageIndex]);
 
   return (
     <>
-      <CreateSessionModal courseId={courseId} onCreate={onCreateSession} />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}
@@ -56,10 +55,10 @@ function SessionsTable({ courseId }: TableProps) {
                 <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Sessions
+                      Students
                     </h2>
                     <p className="text-sm text-gray-600">
-                      Add sessions, edit and more.
+                      Mark attendance for students here, or launch the QR code.
                     </p>
                   </div>
 
@@ -85,7 +84,7 @@ function SessionsTable({ courseId }: TableProps) {
                           <path d="M5 12h14" />
                           <path d="M12 5v14" />
                         </svg>
-                        Create session
+                        Launch QR
                       </button>
                     </div>
                   </div>
@@ -96,7 +95,6 @@ function SessionsTable({ courseId }: TableProps) {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      {/* <th scope="col" className="ps-6 py-3 text-start"></th> */}
                       <th scope="col" className="ps-6 py-3 text-start">
                         <div className="flex items-center gap-x-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
@@ -108,7 +106,7 @@ function SessionsTable({ courseId }: TableProps) {
                       <th scope="col" className="px-6 py-3 text-start">
                         <div className="flex items-center gap-x-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                            Start
+                            Role(s)
                           </span>
                         </div>
                       </th>
@@ -116,7 +114,7 @@ function SessionsTable({ courseId }: TableProps) {
                       <th scope="col" className="px-6 py-3 text-start">
                         <div className="flex items-center gap-x-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                            End
+                            Birthday
                           </span>
                         </div>
                       </th>
@@ -124,35 +122,39 @@ function SessionsTable({ courseId }: TableProps) {
                       <th scope="col" className="px-6 py-3 text-start">
                         <div className="flex items-center gap-x-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                            Description
+                            Phone
                           </span>
                         </div>
                       </th>
 
-                      {/* <th scope="col" className="px-6 py-3 text-start">
+                      <th scope="col" className="px-6 py-3 text-start">
+                        <div className="flex items-center gap-x-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
+                            Blood
+                          </span>
+                        </div>
+                      </th>
+
+                      <th scope="col" className="px-6 py-3 text-start">
                         <div className="flex items-center gap-x-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
                             Status
                           </span>
                         </div>
-                      </th> */}
+                      </th>
 
                       <th scope="col" className="px-6 py-3 text-end"></th>
                     </tr>
                   </thead>
 
                   <tbody className="divide-y divide-gray-200">
-                    {sessions.map((s) => (
-                      <TableRow
-                        key={s.id}
-                        session={s}
-                        onDelete={(sessionId) =>
-                          setSessions((prevSessions) =>
-                            prevSessions.filter(
-                              (session) => session.id !== sessionId
-                            )
-                          )
-                        }
+                    {userData.map((s) => (
+                      <StudentSessionTableRow
+                        key={s.user.id}
+                        user={s.user}
+                        status={s.status}
+                        courseId={courseId}
+                        sessionId={sessionId}
                       />
                     ))}
                   </tbody>
@@ -164,9 +166,9 @@ function SessionsTable({ courseId }: TableProps) {
                   <div>
                     <p className="text-sm text-gray-600">
                       <span className="font-semibold text-gray-800">
-                        {sessions.length}
+                        {userData.length}
                       </span>{" "}
-                      {sessions.length === 1 ? "result" : "results"}
+                      {userData.length === 1 ? "result" : "results"}
                     </p>
                   </div>
 
@@ -234,4 +236,4 @@ function SessionsTable({ courseId }: TableProps) {
   );
 }
 
-export default SessionsTable;
+export default StudentSessionTable;

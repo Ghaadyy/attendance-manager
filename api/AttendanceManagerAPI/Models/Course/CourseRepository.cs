@@ -97,13 +97,11 @@ public class CourseRepository : ICourseRepository
 
     public bool CheckIfStudentEnrolled(int courseId, int studentId)
     {
-        IEnumerable<User> students = GetStudents(courseId);
-        foreach (User student in students)
-        {
-            if (student.Id == studentId) return true;
-        }
-
-        return false;
+        return (from cs in context.CourseStudent
+                join student in context.Users on cs.StudentId equals student.Id
+                join course in context.Courses on cs.CourseId equals course.Id
+                where course.Id == courseId && student.Id == studentId
+                select student).Count() == 1;
     }
 
     public bool CheckIfTeacherEnrolled(int courseId, int teacherId)

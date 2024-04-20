@@ -25,11 +25,6 @@ public class SessionRepository : ISessionRepository
         await context.SaveChangesAsync();
     }
 
-    //public Task EditSession(Session session)
-    //{
-    //    throw new NotImplementedException();
-    //}
-
     public Session? GetSession(int sessionId)
     {
         return context.Sessions.FirstOrDefault(s => s.Id == sessionId);
@@ -63,6 +58,9 @@ public class SessionRepository : ISessionRepository
     public bool HasMore(int courseId, int pageIndex, int pageSize)
         => (pageIndex * pageSize) < GetSessions(courseId).Count();
 
+    public bool HasMoreStudents(int courseId, int pageIndex, int pageSize)
+        => (pageIndex * pageSize) < _courseRepository.GetStudents(courseId).Count();
+
     public IEnumerable<User> GetStudents(int sessionId)
     {
         var students = from att in context.Attendance
@@ -74,10 +72,8 @@ public class SessionRepository : ISessionRepository
         return students;
     }
 
-    public async Task<bool> AddStudent(Session session, int studentId)
+    public async Task AddStudent(Session session, int studentId)
     {
-        if (_courseRepository.CheckIfStudentEnrolled(session.CourseId, studentId) is false) return false;
-
         Attendance attendance = new Attendance
         {
             StudentId = studentId,
@@ -88,8 +84,6 @@ public class SessionRepository : ISessionRepository
         context.Attendance.Add(attendance);
 
         await context.SaveChangesAsync();
-
-        return true;
     }
 
     public bool IsStudentPresent(int sessionId, int studentId)
@@ -107,6 +101,28 @@ public class SessionRepository : ISessionRepository
         }
 
         return true;
+    }
+
+    public PaginatedAttendanceUserList GetStudents(Session session, int pageIndex, int pageSize)
+    {
+        var students = GetStudents(session.Id).ToList();
+        var courseStudents = _courseRepository.GetStudents(session.CourseId).ToList();
+
+        var sessionStudents = from cs in courseStudents
+                              join s in students on cs.Id equals s.Id into joined
+                              from j in joined.DefaultIfEmpty()
+                              select new AttendanceUser
+                              {
+                                  User = cs,
+                                  Status = j != null,
+                              };
+
+
+        return new PaginatedAttendanceUserList
+        {
+            Users = sessionStudents.Skip((pageIndex - 1) * pageSize).Take(pageSize),
+            HasMore = HasMoreStudents(session.CourseId, pageIndex, pageSize),
+        };
     }
 }
 

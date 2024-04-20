@@ -14,12 +14,20 @@ public partial class CoursesController : ControllerBase
 {
     [HttpGet("{courseId}/sessions/{sessionId}/students")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public ActionResult<IEnumerable<User>> GetSessionStudents(int sessionId)
+    public IActionResult GetSessionStudents(int sessionId, [FromQuery] int? pageIndex, [FromQuery] int? pageSize)
     {
         var session = _sessionRepository.GetSession(sessionId);
         if (session is null) return BadRequest("Session not valid");
 
-        return Ok(_sessionRepository.GetStudents(sessionId));
+        var students = _sessionRepository.GetStudents(sessionId).ToList();
+        var courseStudents = _courseRepository.GetStudents(session.CourseId).ToList();
+
+        if (pageIndex is null || pageSize is null)
+            return BadRequest("Please provide query parameters");
+
+        var sessionStudents = _sessionRepository.GetStudents(session, pageIndex.Value, pageSize.Value);
+
+        return Ok(sessionStudents);
     }
 
     [HttpGet("{courseId}/sessions/{sessionId}")]
@@ -84,7 +92,25 @@ public partial class CoursesController : ControllerBase
         if (_sessionRepository.IsStudentPresent(sessionId, userId.Value))
             return BadRequest("Student already marked their attendance");
 
-        if (_sessionRepository.AddStudent(session, userId.Value).Result is false)
+        if (_courseRepository.CheckIfStudentEnrolled(session.CourseId, userId.Value) is false)
+            return BadRequest("Student not enrolled in the course");
+
+        return Ok();
+    }
+
+    [HttpPost("{courseId}/sessions/{sessionId}/attendance/{userId}")]
+    [Authorize(Policy = "TeacherOrStudent")]
+    public IActionResult MarkAttendance(int sessionId, int userId)
+    {
+        Session? session = _sessionRepository.GetSession(sessionId);
+
+        if (session is null || _sessionRepository.CheckIfSessionValid(session) is false)
+            return BadRequest("Session is not valid");
+
+        if (_sessionRepository.IsStudentPresent(sessionId, userId))
+            return BadRequest("Student already marked their attendance");
+
+        if (_courseRepository.CheckIfStudentEnrolled(session.CourseId, userId) is false)
             return BadRequest("Student not enrolled in the course");
 
         return Ok();

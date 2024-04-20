@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import { Session } from "../../../models/Session";
+import { Link } from "react-router-dom";
 
 type TableRowProps = {
   session: Session;
@@ -90,17 +91,24 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
           </span>
         </div>
       </td>
-      <td className="size-px whitespace-nowrap">
+      {/* <td className="size-px whitespace-nowrap">
         <div className="px-6 py-3">
           <span className="py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full">
             <TickIcon />
             Present
           </span>
         </div>
-      </td>
+      </td> */}
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-1.5 inline-flex flex-col gap-2">
           <div className="inline-flex rounded-lg shadow-sm">
+            <Link
+              to={`/course/${session.courseId}/session/${session.id}`}
+              type="button"
+              className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              View
+            </Link>
             <button
               onClick={handleDelete}
               type="button"

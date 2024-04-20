@@ -35,7 +35,7 @@ builder.Services.AddCors();
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
     {
-        options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+        // options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
     })
     .AddXmlSerializerFormatters();
 
