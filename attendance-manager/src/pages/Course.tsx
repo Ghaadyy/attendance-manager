@@ -5,6 +5,7 @@ import { Course as CourseModel } from "../models/Course";
 import { User } from "../models/User";
 import { userContext } from "../store/UserContext";
 import StudentsTable from "../components/tables/users/StudentsTable";
+import TeachersTable from "../components/tables/users/TeachersTable";
 
 function Course() {
   const { token } = useContext(userContext);
@@ -23,7 +24,7 @@ function Course() {
       .then((res) => res.json().then((data) => setCourse(data)))
       .catch((err) => console.log(err));
 
-    fetch(`http://localhost:8000/api/courses/${courseId}/teachers`, {
+    fetch(`http://localhost:8000/api/courses/${courseId}/teachers/all`, {
       headers: { Authorization: "Bearer " + token },
     })
       .then((res) => res.json().then((data) => setTeachers(data)))
@@ -68,6 +69,16 @@ function Course() {
           >
             Students
           </button>
+          <button
+            type="button"
+            className="hs-tab-active:font-semibold hs-tab-active:border-blue-600 hs-tab-active:text-blue-600 py-4 px-1 inline-flex items-center gap-x-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 disabled:opacity-50 disabled:pointer-events-none"
+            id="tabs-with-underline-item-3"
+            data-hs-tab="#tabs-with-underline-3"
+            aria-controls="tabs-with-underline-3"
+            role="tab"
+          >
+            Teachers
+          </button>
         </nav>
       </div>
       <div
@@ -84,6 +95,14 @@ function Course() {
         aria-labelledby="tabs-with-underline-item-2"
       >
         <StudentsTable courseId={Number.parseInt(courseId)} />
+      </div>
+      <div
+        id="tabs-with-underline-3"
+        className="hidden"
+        role="tabpanel"
+        aria-labelledby="tabs-with-underline-item-3"
+      >
+        <TeachersTable courseId={Number.parseInt(courseId)} />
       </div>
     </div>
   );
