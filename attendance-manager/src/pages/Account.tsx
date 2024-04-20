@@ -6,39 +6,24 @@ import { toast } from "react-toastify";
 
 type Inputs = {
   email: string;
-  // password: string;
   username: string;
   firstname: string;
   lastname: string;
   bloodtype: string;
   phonenumber: string;
+  birthdate: string;
 };
 
 function Account() {
-  const { user, token } = useContext(userContext);
+  const { user, token, setUser } = useContext(userContext);
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
-  console.log(watch("bloodtype"));
-
   const submitHandler: SubmitHandler<Inputs> = async (data) => {
-    console.log("submitting");
-    console.log(data);
-    console.log(
-      Object.entries(data)
-        .map((kv) => ({
-          op: "replace",
-          path: kv[0],
-          value: kv[1],
-        }))
-        .filter(({ value }) => value)
-    );
-
     const res = await fetch("http://localhost:8000/api/users/", {
       method: "PATCH",
       headers: {
@@ -60,13 +45,13 @@ function Account() {
       toast.success("Changes saved", {
         toastId: res.status,
       });
+      const user = await res.json();
+      setUser(user);
     } else {
       toast.error("Could not save changes", {
         toastId: res.status,
       });
     }
-
-    // console.log(await res.json());
   };
 
   return (
@@ -208,6 +193,28 @@ function Account() {
                   defaultValue={user?.phoneNumber}
                 />
               </div>
+            </div>
+            {/* <!-- End Col --> */}
+
+            <div className="sm:col-span-3">
+              <label
+                htmlFor="birthdate"
+                className="inline-block text-sm text-gray-800 mt-2.5"
+              >
+                Birthdate
+              </label>
+            </div>
+            {/* <!-- End Col --> */}
+
+            <div className="sm:col-span-9">
+              <input
+                {...register("birthdate")}
+                id="birthdate"
+                type="date"
+                className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                placeholder="john.doe@email.com"
+                defaultValue={user?.birthDate}
+              />
             </div>
             {/* <!-- End Col --> */}
 
