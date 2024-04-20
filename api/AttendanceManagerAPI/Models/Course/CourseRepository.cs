@@ -31,17 +31,19 @@ public class CourseRepository : ICourseRepository
         await context.SaveChangesAsync();
     }
 
-    public async Task RemoveStudent(int courseId, User user)
+    public async Task<bool> RemoveStudent(int courseId, User user)
     {
         var cs = context.CourseStudent
           .Where(cs => cs.CourseId == courseId && user.Id == cs.StudentId)
           .FirstOrDefault();
 
-        if (cs is null) return;
+        if (cs is null) return false;
 
         context.CourseStudent.Remove(cs);
 
         await context.SaveChangesAsync();
+
+        return true;
     }
 
     public async Task AddTeacher(int courseId, int teacherId)

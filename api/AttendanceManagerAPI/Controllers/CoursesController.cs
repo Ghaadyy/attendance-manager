@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using AttendanceManagerAPI.Models;
 using AttendanceManagerAPI.Models.Token;
 using System.Security.Claims;
+using System.Reflection.Metadata.Ecma335;
 
 namespace AttendanceManagerAPI.Controllers;
 
@@ -124,13 +125,13 @@ public partial class CoursesController : ControllerBase
         try
         {
             var user = _userRepository.GetByUserName(studentUsername);
-            if (user is null) return NotFound("User with this username was not found.");
+            if (user is null) return NotFound("Student not found.");
             await _courseRepository.AddStudent(courseId, user);
             return Ok(user);
         }
         catch
         {
-            return BadRequest();
+            return BadRequest("User is not a student");
         }
     }
 
@@ -142,8 +143,9 @@ public partial class CoursesController : ControllerBase
         {
             var user = _userRepository.GetUserById(studentId);
             if (user is null) return NotFound("User with this ID was not found.");
-            await _courseRepository.RemoveStudent(courseId, user);
-            return Ok(user);
+            bool isRemoved = await _courseRepository.RemoveStudent(courseId, user);
+            if (isRemoved is false) return NotFound("User not enrolled in this course");
+            return user;
         }
         catch
         {
