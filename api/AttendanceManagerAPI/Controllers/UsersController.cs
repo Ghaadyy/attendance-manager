@@ -185,13 +185,16 @@ public class UsersController : ControllerBase
         return user;
     }
 
-    [HttpPatch("{userId}/{roleName}")]
+    [HttpPatch("{userEmail}/{roleName}")]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> AddRole(int userId, string roleName)
+    public async Task<IActionResult> AddRole(string userEmail, string roleName)
     {
-        var role = await _userRepository.AddRoleToUser(roleName, userId);
+        var user = _userRepository.GetByEmail(userEmail);
+        if (user is null) return NotFound("User not found");
 
-        if (role is null) return BadRequest();
+        var role = await _userRepository.AddRoleToUser(roleName, user.Id);
+
+        if (role is null) return BadRequest("Role not found");
 
         return NoContent();
     }
