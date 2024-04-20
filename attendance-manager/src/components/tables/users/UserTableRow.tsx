@@ -20,24 +20,28 @@ function UserTableRow({ user, onDelete }: TableRowProps) {
   } = user;
 
   const handleDelete = async () => {
-    const res = await fetch(`http://localhost:8000/api/users/${user.id}`, {
+    await fetch(`http://localhost:8000/api/users/${user.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token,
       },
-    });
-
-    if (res.ok) {
-      onDelete(user.id);
-      toast.success("User deleted successfully", {
-        toastId: res.status,
-      });
-    } else {
-      toast.error("Could not delete user", {
-        toastId: res.status,
-      });
-    }
+    }).then(async (res) => {
+      if (res.ok) {
+        onDelete(user.id);
+        toast.success("User deleted successfully", {
+          toastId: res.status,
+        });
+      } else {
+        toast.error("Could not delete user", {
+          toastId: res.status,
+        });
+      }
+    }).catch(() => {
+      toast.error("Could not send request", {
+        toastId: 500,
+      })
+    })
   };
 
   return (

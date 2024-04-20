@@ -43,17 +43,21 @@ function EditUser() {
           }))
           .filter(({ value }) => value)
       ),
+    }).then(async (res) => {
+        if (res.ok) {
+          toast.success("Changes saved", {
+            toastId: res.status,
+          });
+        } else {
+          toast.error("Could not save changes", {
+            toastId: res.status,
+          });
+        }
+    }).catch(() => {
+      toast.error("Could not send request", {
+        toastId: 500,
+      });
     });
-
-    if (res.ok) {
-      toast.success("Changes saved", {
-        toastId: res.status,
-      });
-    } else {
-      toast.error("Could not save changes", {
-        toastId: res.status,
-      });
-    }
   };
 
   return (

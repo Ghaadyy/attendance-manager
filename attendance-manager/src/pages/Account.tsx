@@ -24,7 +24,7 @@ function Account() {
   } = useForm<Inputs>();
 
   const submitHandler: SubmitHandler<Inputs> = async (data) => {
-    const res = await fetch("http://localhost:8000/api/users/", {
+    await fetch("http://localhost:8000/api/users/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -39,19 +39,23 @@ function Account() {
           }))
           .filter(({ value }) => value)
       ),
+    }).then(async (res) => {
+        if (res.ok) {
+          toast.success("Changes saved", {
+            toastId: res.status,
+          });
+          const user = await res.json();
+          setUser(user);
+        } else {
+          toast.error("Could not save changes", {
+            toastId: res.status,
+          });
+        }
+    }).catch(() => {
+      toast.error("Could not send request", {
+        toastId: 500,
+      });
     });
-
-    if (res.ok) {
-      toast.success("Changes saved", {
-        toastId: res.status,
-      });
-      const user = await res.json();
-      setUser(user);
-    } else {
-      toast.error("Could not save changes", {
-        toastId: res.status,
-      });
-    }
   };
 
   return (
