@@ -22,7 +22,10 @@ public partial class CoursesController : ControllerBase
         var students = _sessionRepository.GetStudents(sessionId).ToList();
         var courseStudents = _courseRepository.GetStudents(session.CourseId).ToList();
 
-        if (pageIndex is null || pageSize is null)
+        if (pageSize is null)
+            return Ok(_sessionRepository.GetStudents(session.Id));
+
+        if (pageIndex is null)
             return BadRequest("Please provide query parameters");
 
         var sessionStudents = _sessionRepository.GetStudents(session, pageIndex.Value, pageSize.Value);

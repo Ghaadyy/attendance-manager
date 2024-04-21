@@ -1,8 +1,9 @@
 import { toast } from "react-toastify";
 import { Session } from "../../../models/Session";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { userContext } from "../../../store/UserContext";
+import { User } from "../../../models/User";
 
 type TableRowProps = {
   session: Session;
@@ -24,8 +25,50 @@ function TickIcon() {
   );
 }
 
+function AbsentIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      className="size-2.5"
+    >
+      <line x1="9" x2="15" y1="15" y2="9" />
+      <circle cx="12" cy="12" r="10" />
+    </svg>
+  );
+}
+
 function SessionTableRow({ session, onDelete }: TableRowProps) {
   const { user, token } = useContext(userContext);
+
+  const [status, setStatus] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch(
+      `${process.env.REACT_APP_API_URL}/courses/${session.courseId}/sessions/${session.id}/students`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    )
+      .then((res) =>
+        res.json().then((data) => {
+          const users = data;
+          setStatus(users?.find((u: User) => u.id === user?.id));
+        })
+      )
+      .catch((err) => console.log(err));
+  }, [token, session, user]);
 
   const handleDelete = async () => {
     const res = await fetch(
@@ -93,35 +136,43 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
           </span>
         </div>
       </td>
-      {/* <td className="size-px whitespace-nowrap">
-        <div className="px-6 py-3">
-          <span className="py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full">
-            <TickIcon />
-            Present
-          </span>
-        </div>
-      </td> */}
-      {(user?.roles?.includes("Administrator") || user?.roles?.includes("Teacher")) &&
-      <td className="size-px whitespace-nowrap">
-        <div className="px-6 py-1.5 inline-flex flex-col gap-2">
-          <div className="inline-flex rounded-lg shadow-sm">
-            <Link
-              to={`/course/${session.courseId}/session/${session.id}`}
-              type="button"
-              className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+      {user?.roles?.includes("Student") && (
+        <td className="size-px whitespace-nowrap">
+          <div className="px-6 py-3">
+            <span
+              className={`py-1 px-1.5 inline-flex items-center gap-x-1 text-xs font-medium ${
+                status ? "bg-teal-100 text-teal-800" : "bg-red-100 text-red-800"
+              } rounded-full`}
             >
-              View
-            </Link>
-            <button
-              onClick={handleDelete}
-              type="button"
-              className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              Delete
-            </button>
+              {status ? <TickIcon /> : <AbsentIcon />}
+              {status ? "Present" : "Absent"}
+            </span>
           </div>
-        </div>
-      </td>}
+        </td>
+      )}
+      {(user?.roles?.includes("Administrator") ||
+        user?.roles?.includes("Teacher")) && (
+        <td className="size-px whitespace-nowrap">
+          <div className="px-6 py-1.5 inline-flex flex-col gap-2">
+            <div className="inline-flex rounded-lg shadow-sm">
+              <Link
+                to={`/course/${session.courseId}/session/${session.id}`}
+                type="button"
+                className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                View
+              </Link>
+              <button
+                onClick={handleDelete}
+                type="button"
+                className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </td>
+      )}
     </tr>
   );
 }

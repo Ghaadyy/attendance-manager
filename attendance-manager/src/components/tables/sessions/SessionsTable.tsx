@@ -39,7 +39,7 @@ function SessionsTable({ courseId }: TableProps) {
         })
       )
       .catch((err) => console.log(err));
-  }, [token, courseId, pageIndex]);
+  }, [token, courseId, pageIndex, isOpen]);
 
   const onCreateSession = (session: Session) => {
     setSessions((sessions) => [...sessions, session]);
@@ -92,28 +92,30 @@ function SessionsTable({ courseId }: TableProps) {
 
                   <div>
                     <div className="inline-flex gap-x-2">
-                      {user?.roles?.includes("Administrator") && <button
-                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                        type="button"
-                        data-hs-overlay="#hs-basic-modal"
-                      >
-                        <svg
-                          className="flex-shrink-0 size-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                      {user?.roles?.includes("Administrator") && (
+                        <button
+                          className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                          type="button"
+                          data-hs-overlay="#hs-basic-modal"
                         >
-                          <path d="M5 12h14" />
-                          <path d="M12 5v14" />
-                        </svg>
-                        Create session
-                      </button>}
+                          <svg
+                            className="flex-shrink-0 size-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M5 12h14" />
+                            <path d="M12 5v14" />
+                          </svg>
+                          Create session
+                        </button>
+                      )}
                       <button
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                         type="button"
@@ -167,13 +169,15 @@ function SessionsTable({ courseId }: TableProps) {
                         </div>
                       </th>
 
-                      {/* <th scope="col" className="px-6 py-3 text-start">
-                        <div className="flex items-center gap-x-2">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
-                            Status
-                          </span>
-                        </div>
-                      </th> */}
+                      {user?.roles?.includes("Student") && (
+                        <th scope="col" className="px-6 py-3 text-start">
+                          <div className="flex items-center gap-x-2">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-gray-800">
+                              Status
+                            </span>
+                          </div>
+                        </th>
+                      )}
 
                       <th scope="col" className="px-6 py-3 text-end"></th>
                     </tr>
