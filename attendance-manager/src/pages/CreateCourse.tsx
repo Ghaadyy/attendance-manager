@@ -1,14 +1,27 @@
 import { useContext, useState } from "react";
 import { userContext } from "../store/UserContext";
+import { toast } from "react-toastify";
 
 function CreateCourse() {
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  const { user, token } = useContext(userContext);
+  const { token } = useContext(userContext);
+  
+  const resetForms = () => {
+    setName("");
+    setDescription("");
+  };
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = (ev) => {
     ev.preventDefault();
+
+    if(name === "" || description === "") {
+      toast.warning("Empty input detected", {
+        toastId: 400,
+      });
+      return;
+    }
 
     fetch(`${process.env.REACT_APP_API_URL}/courses`, {
       method: "POST",
@@ -20,7 +33,18 @@ function CreateCourse() {
         name,
         description,
       }),
-    });
+    }).then(async (res) => {
+      if(res.ok){
+        resetForms();
+        toast.success("Course created", {
+          toastId: res.status,
+        });
+      }else {
+        toast.error(await res.text(), {
+          toastId: 401,
+        });
+      }
+    }).catch((err) => console.log(err));
   };
 
   return (
@@ -41,6 +65,7 @@ function CreateCourse() {
                 type="text"
                 className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                 placeholder="Enter course name"
+                minLength={4}
                 value={name}
                 onChange={(ev) => setName(ev.target.value)}
               />

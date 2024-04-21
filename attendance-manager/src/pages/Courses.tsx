@@ -6,7 +6,7 @@ import { userContext } from "../store/UserContext";
 function Courses() {
   const [courses, setCourses] = useState<Course[]>([]);
 
-  const { user, token } = useContext(userContext);
+  const { token } = useContext(userContext);
 
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/courses`, {

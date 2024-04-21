@@ -91,7 +91,12 @@ function App() {
         },
         {
           path: "users",
-          element: <Users />,
+          element:
+            user?.roles?.includes("Administrator") === true ? (
+              <Users />
+            ) : (
+              <Navigate replace to="/" />
+            ),
         },
         {
           path: "courses",
@@ -107,15 +112,30 @@ function App() {
         },
         {
           path: "course/create",
-          element: <CreateCourse />,
+          element:
+            user?.roles?.includes("Administrator") === true ? (
+              <CreateCourse />
+            ) : (
+              <Navigate replace to="/" />
+            ),
         },
         {
           path: "users/create",
-          element: <CreateUser />,
+          element:
+            user?.roles?.includes("Administrator") === true ? (
+              <CreateUser />
+            ) : (
+              <Navigate replace to="/" />
+            ),
         },
         {
           path: "users/edit",
-          element: <EditUser />,
+          element:
+            user?.roles?.includes("Administrator") === true ? (
+              <EditUser />
+            ) : (
+              <Navigate replace to="/" />
+            ),
         },
       ],
     },
