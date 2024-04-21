@@ -10,6 +10,7 @@ type TableRowProps = {
 };
 
 function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
+  const userCtx = useContext(userContext);
   const {
     firstName,
     lastName,
@@ -85,6 +86,7 @@ function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
           <span className="text-sm text-gray-500">{bloodType ?? "N/A"}</span>
         </div>
       </td>
+      {(userCtx?.user?.roles?.includes("Administrator") || userCtx?.user?.roles?.includes("Teacher")) &&
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-1.5">
           <div className="inline-flex rounded-lg shadow-sm">
@@ -97,7 +99,7 @@ function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
             </button>
           </div>
         </div>
-      </td>
+      </td>}
     </tr>
   );
 }

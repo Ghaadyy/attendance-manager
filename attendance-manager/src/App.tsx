@@ -42,7 +42,9 @@ function App() {
     const storedToken = localStorage.getItem("token");
 
     if (storedToken) {
-      const { exp } = jwtDecode(storedToken);
+      const decodedToken : any = jwtDecode(storedToken);
+      
+      const { exp } = decodedToken;
       setToken(storedToken);
 
       if (!exp || exp < Date.now() / 1000) {
@@ -58,7 +60,11 @@ function App() {
           },
         }).then((res) =>
           res.json().then((data) => {
-            setUser(data);
+            const user_data: User = {
+              ...data,
+              roles: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+            };
+            setUser(user_data);
           })
         );
       }

@@ -1,6 +1,8 @@
 import { toast } from "react-toastify";
 import { Session } from "../../../models/Session";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { userContext } from "../../../store/UserContext";
 
 type TableRowProps = {
   session: Session;
@@ -23,7 +25,7 @@ function TickIcon() {
 }
 
 function SessionTableRow({ session, onDelete }: TableRowProps) {
-  const token = localStorage.getItem("token");
+  const { user, token } = useContext(userContext);
 
   const handleDelete = async () => {
     const res = await fetch(
@@ -99,6 +101,7 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
           </span>
         </div>
       </td> */}
+      {(user?.roles?.includes("Administrator") || user?.roles?.includes("Teacher")) &&
       <td className="size-px whitespace-nowrap">
         <div className="px-6 py-1.5 inline-flex flex-col gap-2">
           <div className="inline-flex rounded-lg shadow-sm">
@@ -118,7 +121,7 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
             </button>
           </div>
         </div>
-      </td>
+      </td>}
     </tr>
   );
 }

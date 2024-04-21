@@ -9,7 +9,7 @@ function StudentsTable({ courseId }: { courseId: number }) {
   const [pageIndex, setPageIndex] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const { token } = useContext(userContext);
+  const { user, token } = useContext(userContext);
 
   useEffect(() => {
     const pageSize = 5;
@@ -63,6 +63,7 @@ function StudentsTable({ courseId }: { courseId: number }) {
                     </p>
                   </div>
 
+                  {(user?.roles?.includes("Administrator") || user?.roles?.includes("Teacher")) &&
                   <div>
                     <div className="inline-flex gap-x-2">
                       <button
@@ -88,7 +89,7 @@ function StudentsTable({ courseId }: { courseId: number }) {
                         Add student
                       </button>
                     </div>
-                  </div>
+                  </div>}
                 </div>
                 {/* <!-- End Header --> */}
 

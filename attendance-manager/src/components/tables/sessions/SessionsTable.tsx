@@ -16,7 +16,7 @@ function SessionsTable({ courseId }: TableProps) {
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const { token } = useContext(userContext);
+  const { user, token } = useContext(userContext);
 
   useEffect(() => {
     const pageSize = 5;
@@ -92,7 +92,7 @@ function SessionsTable({ courseId }: TableProps) {
 
                   <div>
                     <div className="inline-flex gap-x-2">
-                      <button
+                      {user?.roles?.includes("Administrator") && <button
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                         type="button"
                         data-hs-overlay="#hs-basic-modal"
@@ -113,7 +113,7 @@ function SessionsTable({ courseId }: TableProps) {
                           <path d="M12 5v14" />
                         </svg>
                         Create session
-                      </button>
+                      </button>}
                       <button
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                         type="button"

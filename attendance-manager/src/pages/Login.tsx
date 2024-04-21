@@ -4,6 +4,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useContext } from "react";
 import { userContext } from "../store/UserContext";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+import { User } from "../models/User";
 
 type Inputs = {
   email: string;
@@ -38,6 +40,7 @@ function Login() {
           const { token } = await res.json();
 
           if (token) {
+            const decodedToken : any = jwtDecode(token);
             fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
               method: "GET",
               headers: {
@@ -47,7 +50,11 @@ function Login() {
             })
               .then((res) =>
                 res.json().then((data) => {
-                  userCtx.setUser(data);
+                  const user_data: User = {
+                    ...data,
+                    roles: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+                  };
+                  userCtx.setUser(user_data);
                   userCtx.setToken(token);
                   localStorage.setItem("token", token);
                   navigate("/");

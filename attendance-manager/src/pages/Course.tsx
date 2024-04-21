@@ -8,7 +8,7 @@ import StudentsTable from "../components/tables/users/StudentsTable";
 import TeachersTable from "../components/tables/users/TeachersTable";
 
 function Course() {
-  const { token } = useContext(userContext);
+  const { user, token } = useContext(userContext);
 
   const { courseId } = useParams();
 
@@ -69,6 +69,7 @@ function Course() {
           >
             Students
           </button>
+          {user?.roles?.includes("Administrator") &&
           <button
             type="button"
             className="hs-tab-active:font-semibold hs-tab-active:border-blue-600 hs-tab-active:text-blue-600 py-4 px-1 inline-flex items-center gap-x-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 disabled:opacity-50 disabled:pointer-events-none"
@@ -78,7 +79,7 @@ function Course() {
             role="tab"
           >
             Teachers
-          </button>
+          </button>}
         </nav>
       </div>
       <div
@@ -96,6 +97,7 @@ function Course() {
       >
         <StudentsTable courseId={Number.parseInt(courseId)} />
       </div>
+      {user?.roles?.includes("Administrator") &&
       <div
         id="tabs-with-underline-3"
         className="hidden"
@@ -103,7 +105,7 @@ function Course() {
         aria-labelledby="tabs-with-underline-item-3"
       >
         <TeachersTable courseId={Number.parseInt(courseId)} />
-      </div>
+      </div>}
     </div>
   );
 }

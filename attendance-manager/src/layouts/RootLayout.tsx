@@ -182,7 +182,7 @@ function RootLayout() {
           <ul className="space-y-1.5">
             <NavItem path="/" name="Dashboard" />
             <NavItem path="/courses" name="Courses" />
-            <NavItem path="/users" name="Users" />
+            {user?.roles?.includes("Administrator") && <NavItem path="/users" name="Users" />}
           </ul>
         </nav>
       </div>
