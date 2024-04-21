@@ -96,7 +96,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
             <form>
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="af-account-email"
+                  htmlFor="af-account-title"
                   className="inline-block text-sm text-gray-800 mt-2.5"
                 >
                   Session title
@@ -104,7 +104,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
               </div>
               <div className="sm:col-span-9">
                 <input
-                  id="af-account-email"
+                  id="af-account-title"
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="Web dynamique"
@@ -115,7 +115,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
 
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="af-account-email"
+                  htmlFor="af-account-description"
                   className="inline-block text-sm text-gray-800 mt-2.5"
                 >
                   Description
@@ -123,7 +123,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
               </div>
               <div className="sm:col-span-9">
                 <input
-                  id="af-account-email"
+                  id="af-account-description"
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   placeholder="Reactive web development"
@@ -134,7 +134,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
 
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="af-account-email"
+                  htmlFor="af-account-startd"
                   className="inline-block text-sm text-gray-800 mt-2.5"
                 >
                   Start date
@@ -142,7 +142,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
               </div>
               <div className="sm:col-span-9">
                 <input
-                  id="af-account-email"
+                  id="af-account-startd"
                   type="datetime-local"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   value={startDate}
@@ -152,7 +152,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
 
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="af-account-email"
+                  htmlFor="af-account-endd"
                   className="inline-block text-sm text-gray-800 mt-2.5"
                 >
                   End date
@@ -160,7 +160,7 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
               </div>
               <div className="sm:col-span-9">
                 <input
-                  id="af-account-email"
+                  id="af-account-endd"
                   type="datetime-local"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                   value={endDate}

@@ -93,7 +93,7 @@ function AddTeacherModal({ courseId, onCreate }: AddTeacherModalProps) {
             <form>
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="username"
+                  htmlFor="teacher_username"
                   className="inline-block text-sm text-gray-800 mt-2.5"
                 >
                   Username
@@ -101,10 +101,10 @@ function AddTeacherModal({ courseId, onCreate }: AddTeacherModalProps) {
               </div>
               <div className="sm:col-span-9">
                 <input
-                  id="username"
+                  id="teacher_username"
                   type="text"
                   className="py-2 px-3 pe-11 block w-full border-gray-200 shadow-sm text-sm rounded-lg focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                  placeholder="john"
+                  placeholder="najib"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
