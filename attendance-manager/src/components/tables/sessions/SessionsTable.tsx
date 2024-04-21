@@ -3,6 +3,7 @@ import { Session } from "../../../models/Session";
 import CreateSessionModal from "../../modals/CreateSessionModal";
 import TableRow from "./SessionTableRow";
 import { userContext } from "../../../store/UserContext";
+import QRScanModal from "../../modals/QRScanModal";
 
 type TableProps = {
   courseId: number;
@@ -12,6 +13,8 @@ function SessionsTable({ courseId }: TableProps) {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [pageIndex, setPageIndex] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
+
+  const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
 
   const { token } = useContext(userContext);
 
@@ -42,9 +45,33 @@ function SessionsTable({ courseId }: TableProps) {
     setSessions((sessions) => [...sessions, session]);
   };
 
+  function ScanQRIcon() {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        className="flex-shrink-0 size-4"
+      >
+        <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+        <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+        <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+        <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+        <path d="M7 12h10" />
+      </svg>
+    );
+  }
+
   return (
     <>
       <CreateSessionModal courseId={courseId} onCreate={onCreateSession} />
+      <QRScanModal />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}
@@ -86,6 +113,15 @@ function SessionsTable({ courseId }: TableProps) {
                           <path d="M12 5v14" />
                         </svg>
                         Create session
+                      </button>
+                      <button
+                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                        type="button"
+                        data-hs-overlay="#qr-scan-modal"
+                        onClick={() => setIsScannerOpen((isOpen) => !isOpen)}
+                      >
+                        <ScanQRIcon />
+                        Scan QR
                       </button>
                     </div>
                   </div>

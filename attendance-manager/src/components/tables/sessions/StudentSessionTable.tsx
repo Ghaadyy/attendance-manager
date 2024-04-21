@@ -2,11 +2,42 @@ import { useContext, useEffect, useState } from "react";
 import { userContext } from "../../../store/UserContext";
 import StudentSessionTableRow from "./StudentSessionTableRow";
 import { User } from "../../../models/User";
+import QRModal from "../../modals/QRModal";
 
 type TableProps = {
   courseId: number;
   sessionId: number;
 };
+
+function QRCodeIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      className="flex-shrink-0 size-4"
+    >
+      <rect width="5" height="5" x="3" y="3" rx="1" />
+      <rect width="5" height="5" x="16" y="3" rx="1" />
+      <rect width="5" height="5" x="3" y="16" rx="1" />
+      <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+      <path d="M21 21v.01" />
+      <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+      <path d="M3 12h.01" />
+      <path d="M12 3h.01" />
+      <path d="M12 16v.01" />
+      <path d="M16 12h1" />
+      <path d="M21 12v.01" />
+      <path d="M12 21v-1" />
+    </svg>
+  );
+}
 
 function StudentSessionTable({ courseId, sessionId }: TableProps) {
   const [userData, setUserData] = useState<{ status: boolean; user: User }[]>(
@@ -44,6 +75,7 @@ function StudentSessionTable({ courseId, sessionId }: TableProps) {
 
   return (
     <>
+      <QRModal sessionId={sessionId} courseId={courseId} />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}
@@ -67,23 +99,9 @@ function StudentSessionTable({ courseId, sessionId }: TableProps) {
                       <button
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                         type="button"
-                        data-hs-overlay="#hs-basic-modal"
+                        data-hs-overlay="#qr-modal"
                       >
-                        <svg
-                          className="flex-shrink-0 size-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path d="M5 12h14" />
-                          <path d="M12 5v14" />
-                        </svg>
+                        <QRCodeIcon />
                         Launch QR
                       </button>
                     </div>
