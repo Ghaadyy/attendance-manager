@@ -14,7 +14,7 @@ function SessionsTable({ courseId }: TableProps) {
   const [pageIndex, setPageIndex] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const [isScannerOpen, setIsScannerOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const { token } = useContext(userContext);
 
@@ -71,7 +71,7 @@ function SessionsTable({ courseId }: TableProps) {
   return (
     <>
       <CreateSessionModal courseId={courseId} onCreate={onCreateSession} />
-      <QRScanModal />
+      <QRScanModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}
@@ -118,7 +118,9 @@ function SessionsTable({ courseId }: TableProps) {
                         className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                         type="button"
                         data-hs-overlay="#qr-scan-modal"
-                        onClick={() => setIsScannerOpen((isOpen) => !isOpen)}
+                        onClick={() => {
+                          setIsOpen(true);
+                        }}
                       >
                         <ScanQRIcon />
                         Scan QR

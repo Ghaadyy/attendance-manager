@@ -3,7 +3,13 @@ import { Scanner } from "@yudiel/react-qr-scanner";
 import { userContext } from "../../store/UserContext";
 import { toast } from "react-toastify";
 
-function QRScanModal() {
+function QRScanModal({
+  onClose,
+  isOpen,
+}: {
+  onClose: () => void;
+  isOpen: boolean;
+}) {
   const { token } = useContext(userContext);
 
   return (
@@ -19,6 +25,7 @@ function QRScanModal() {
               type="button"
               className="flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
               data-hs-overlay="#qr-scan-modal"
+              onClick={() => onClose()}
             >
               <span className="sr-only">Close</span>
               <svg
@@ -39,45 +46,41 @@ function QRScanModal() {
             </button>
           </div>
           <div className="p-4 overflow-y-auto mx-auto w-full">
-            <Scanner
-              styles={{
-                container: { width: "100%" },
-              }}
-              onResult={async (text, result) => {
-                const res = await fetch(text, {
-                  method: "POST",
-                  headers: {
-                    Authorization: "Bearer " + token,
-                  },
-                });
+            {isOpen && (
+              <Scanner
+                styles={{
+                  container: { width: "100%" },
+                }}
+                onResult={async (text, result) => {
+                  const res = await fetch(text, {
+                    method: "POST",
+                    headers: {
+                      Authorization: "Bearer " + token,
+                    },
+                  });
 
-                if (res.ok) {
-                  toast.success("Marked as present!", {
-                    toastId: res.status,
-                  });
-                } else {
-                  toast.error(await res.text(), {
-                    toastId: res.status,
-                  });
-                }
-              }}
-              //onError={(error) => toast.error(error.message)}
-            />
+                  if (res.ok) {
+                    toast.success("Marked as present!", {
+                      toastId: res.status,
+                    });
+                  } else {
+                    toast.error(await res.text(), {
+                      toastId: res.status,
+                    });
+                  }
+                }}
+                //onError={(error) => toast.error(error.message)}
+              />
+            )}
           </div>
           <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
             <button
               type="button"
+              onClick={() => onClose()}
               className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
               data-hs-overlay="#qr-scan-modal"
             >
               Close
-            </button>
-            <button
-              type="button"
-              disabled
-              className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              Create
             </button>
           </div>
         </div>
