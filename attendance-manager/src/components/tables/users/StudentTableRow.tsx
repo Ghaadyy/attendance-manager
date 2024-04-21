@@ -25,7 +25,7 @@ function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
 
   const handleDelete = async () => {
     const res = await fetch(
-      `http://localhost:8000/api/courses/${courseId}/student/${studentId}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/student/${studentId}`,
       {
         method: "DELETE",
         headers: {

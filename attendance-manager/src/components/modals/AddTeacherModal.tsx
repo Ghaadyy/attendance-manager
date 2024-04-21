@@ -25,7 +25,7 @@ function AddTeacherModal({ courseId, onCreate }: AddTeacherModalProps) {
       return;
     }
     await fetch(
-      `http://localhost:8000/api/courses/${courseId}/teacher/${username}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/teacher/${username}`,
       {
         method: "PATCH",
         headers: {

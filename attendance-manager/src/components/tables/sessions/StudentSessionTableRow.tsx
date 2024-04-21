@@ -69,7 +69,7 @@ function StudentSessionTableRow({
 
   const markAttendance = async () => {
     const res = await fetch(
-      `http://localhost:8000/api/courses/${courseId}/sessions/${sessionId}/attendance/${user.id}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/sessions/${sessionId}/attendance/${user.id}`,
       {
         method: "POST",
         headers: {

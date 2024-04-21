@@ -20,7 +20,7 @@ function AddUserModal() {
         });
         return;
     }
-    await fetch(`http://localhost:8000/api/users/${email}/${role}`, {
+    await fetch(`${process.env.REACT_APP_API_URL}/users/${email}/${role}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

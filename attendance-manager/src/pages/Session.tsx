@@ -15,7 +15,7 @@ function SessionPage() {
 
   useEffect(() => {
     fetch(
-      `http://localhost:8000/api/courses/${courseId}/sessions/${sessionId}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/sessions/${sessionId}`,
       {
         headers: { Authorization: "Bearer " + token },
       }

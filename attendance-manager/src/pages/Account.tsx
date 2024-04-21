@@ -24,7 +24,7 @@ function Account() {
   } = useForm<Inputs>();
 
   const submitHandler: SubmitHandler<Inputs> = async (data) => {
-    await fetch("http://localhost:8000/api/users/", {
+    await fetch(`${process.env.REACT_APP_API_URL}/users/`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +39,8 @@ function Account() {
           }))
           .filter(({ value }) => value)
       ),
-    }).then(async (res) => {
+    })
+      .then(async (res) => {
         if (res.ok) {
           toast.success("Changes saved", {
             toastId: res.status,
@@ -51,11 +52,12 @@ function Account() {
             toastId: res.status,
           });
         }
-    }).catch(() => {
-      toast.error("Could not send request", {
-        toastId: 500,
+      })
+      .catch(() => {
+        toast.error("Could not send request", {
+          toastId: 500,
+        });
       });
-    });
   };
 
   return (

@@ -15,7 +15,7 @@ function TeachersTable({ courseId }: { courseId: number }) {
     const pageSize = 5;
 
     fetch(
-      `http://localhost:8000/api/courses/${courseId}/teachers?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/teachers?pageIndex=${pageIndex}&pageSize=${pageSize}`,
       {
         method: "GET",
         headers: {

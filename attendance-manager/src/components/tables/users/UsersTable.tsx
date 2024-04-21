@@ -15,7 +15,7 @@ function UsersTable() {
     const pageSize = 5;
 
     fetch(
-      `http://localhost:8000/api/users?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      `${process.env.REACT_APP_API_URL}/users?pageIndex=${pageIndex}&pageSize=${pageSize}`,
       {
         method: "GET",
         headers: {

@@ -10,7 +10,7 @@ function CreateCourse() {
   const submitHandler: React.FormEventHandler<HTMLFormElement> = (ev) => {
     ev.preventDefault();
 
-    fetch("http://localhost:8000/api/courses", {
+    fetch(`${process.env.REACT_APP_API_URL}/courses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

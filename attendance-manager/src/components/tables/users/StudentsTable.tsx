@@ -15,7 +15,7 @@ function StudentsTable({ courseId }: { courseId: number }) {
     const pageSize = 5;
 
     fetch(
-      `http://localhost:8000/api/courses/${courseId}/students?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/students?pageIndex=${pageIndex}&pageSize=${pageSize}`,
       {
         method: "GET",
         headers: {

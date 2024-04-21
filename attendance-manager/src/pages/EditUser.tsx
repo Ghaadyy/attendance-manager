@@ -28,7 +28,7 @@ function EditUser() {
   } = useForm<Inputs>();
 
   const submitHandler: SubmitHandler<Inputs> = async (data) => {
-    const res = await fetch(`http://localhost:8000/api/users/${user.id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -25,42 +25,46 @@ function Signup() {
   const userCtx = useContext(userContext);
 
   const submitHandler: SubmitHandler<Inputs> = async (data) => {
-    const res = await fetch("http://localhost:8000/api/users/signup", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/users/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    }).then(async (res) => {
-      if (!res.ok) {
+    })
+      .then(async (res) => {
+        if (!res.ok) {
           toast.error(await res.text(), {
-          toastId: res.status
-        });
-      } else {
-        const { token } = await res.json();
+            toastId: res.status,
+          });
+        } else {
+          const { token } = await res.json();
 
-        if (token) {
-          fetch("http://localhost:8000/api/users/me", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          }).then((res) =>
-            res.json().then((data) => {
-              userCtx.setUser(data);
-              userCtx.setToken(token);
-              localStorage.setItem("token", token);
-              navigate("/");
+          if (token) {
+            fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+              },
             })
-          ).catch((err) => console.log(err));
+              .then((res) =>
+                res.json().then((data) => {
+                  userCtx.setUser(data);
+                  userCtx.setToken(token);
+                  localStorage.setItem("token", token);
+                  navigate("/");
+                })
+              )
+              .catch((err) => console.log(err));
+          }
         }
-      }
-    }).catch(() => {
-      toast.error("Could not send request", {
-        toastId: 500,
+      })
+      .catch(() => {
+        toast.error("Could not send request", {
+          toastId: 500,
+        });
       });
-    });
   };
 
   return (

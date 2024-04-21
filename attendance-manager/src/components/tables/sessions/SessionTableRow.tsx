@@ -27,7 +27,7 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
 
   const handleDelete = async () => {
     const res = await fetch(
-      `http://localhost:8000/api/courses/${session.courseId}/sessions/${session.id}`,
+      `${process.env.REACT_APP_API_URL}/courses/${session.courseId}/sessions/${session.id}`,
       {
         method: "DELETE",
         headers: {

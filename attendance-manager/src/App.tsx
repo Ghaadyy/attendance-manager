@@ -50,7 +50,7 @@ function App() {
         setToken(undefined);
         setUser(undefined);
       } else {
-        fetch("http://localhost:8000/api/users/me", {
+        fetch(`${process.env.REACT_APP_API_URL}/users/me`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

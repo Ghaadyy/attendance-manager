@@ -20,7 +20,7 @@ function UserTableRow({ user, onDelete }: TableRowProps) {
   } = user;
 
   const handleDelete = async () => {
-    await fetch(`http://localhost:8000/api/users/${user.id}`, {
+    await fetch(`${process.env.REACT_APP_API_URL}/users/${user.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

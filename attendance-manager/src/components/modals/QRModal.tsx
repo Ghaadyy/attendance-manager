@@ -41,7 +41,7 @@ function QRModal({
           </div>
           <div className="p-4 overflow-y-auto mx-auto">
             <QRCodeCanvas
-              value={`http://localhost:8000/api/courses/${courseId}/sessions/${sessionId}/attendance`}
+              value={`${process.env.REACT_APP_API_URL}/courses/${courseId}/sessions/${sessionId}/attendance`}
               size={256}
             />
           </div>

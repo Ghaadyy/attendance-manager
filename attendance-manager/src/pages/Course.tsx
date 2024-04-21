@@ -18,13 +18,13 @@ function Course() {
   const [teachers, setTeachers] = useState<User[]>([]);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/courses/${courseId}`, {
+    fetch(`${process.env.REACT_APP_API_URL}/courses/${courseId}`, {
       headers: { Authorization: "Bearer " + token },
     })
       .then((res) => res.json().then((data) => setCourse(data)))
       .catch((err) => console.log(err));
 
-    fetch(`http://localhost:8000/api/courses/${courseId}/teachers/all`, {
+    fetch(`${process.env.REACT_APP_API_URL}/courses/${courseId}/teachers/all`, {
       headers: { Authorization: "Bearer " + token },
     })
       .then((res) => res.json().then((data) => setTeachers(data)))

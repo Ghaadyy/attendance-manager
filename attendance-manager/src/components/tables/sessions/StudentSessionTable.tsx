@@ -53,7 +53,7 @@ function StudentSessionTable({ courseId, sessionId }: TableProps) {
     const pageSize = 5;
 
     fetch(
-      `http://localhost:8000/api/courses/${courseId}/sessions/${sessionId}/students?pageSize=${pageSize}&pageIndex=${pageIndex}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/sessions/${sessionId}/students?pageSize=${pageSize}&pageIndex=${pageIndex}`,
       {
         method: "GET",
         headers: {
