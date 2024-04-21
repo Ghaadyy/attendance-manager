@@ -14,6 +14,7 @@ public interface IUserRepository
     bool HasMore(int pageIndex, int pageSize);
     bool HasMoreStudents(Course course, int pageIndex, int pageSize);
     bool HasMoreTeachers(Course course, int pageIndex, int pageSize);
+    bool HasRole(User user, string roleName);
     IEnumerable<User> GetUsers(int pageIndex, int pageSize);
     IEnumerable<User> GetStudents(Course course, int pageIndex, int pageSize);
     IEnumerable<User> GetTeachers(Course course, int pageIndex, int pageSize);

@@ -127,6 +127,7 @@ public partial class CoursesController : ControllerBase
 
             var user = _userRepository.GetByUserName(studentUsername);
             if (user is null) return NotFound("Student not found.");
+            if (_userRepository.HasRole(user, "Student") is false) return BadRequest("User is not a Student");
             if (_courseRepository.CheckIfStudentEnrolled(courseId, user.Id))
                 return BadRequest("Student already enrolled in course.");
             await _courseRepository.AddStudent(courseId, user);
@@ -164,6 +165,7 @@ public partial class CoursesController : ControllerBase
         {
             var user = _userRepository.GetByUserName(teacherUsername);
             if (user is null) return NotFound("Teacher not found.");
+            if (_userRepository.HasRole(user, "Teacher") is false) return BadRequest("User is not a Teacher");
             if (_courseRepository.CheckIfTeacherEnrolled(courseId, user.Id))
                 return BadRequest("Teacher already teaching this course.");
             await _courseRepository.AddTeacher(courseId, user.Id);

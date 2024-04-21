@@ -139,6 +139,14 @@ public class UserRepository : IUserRepository
                                      where cs.CourseId == course.Id
                                      select u).Count();
 
+    public bool HasRole(User user, string roleName)
+    {
+        return (from ur in context.UserRoles
+                join r in context.Roles on ur.RoleId equals r.Id
+                where ur.UserId == user.Id && r.Name == roleName
+                select ur).Count() > 0;
+    }
+
     public IEnumerable<User> GetStudents(Course course, int pageIndex, int pageSize)
     {
         var users = (from u in context.Users
