@@ -1,5 +1,15 @@
 # Attendance Manager
 
+## Table of contents
+
+- [Description](#description)
+- [Tech Stack](#tech-stack)
+- [Installation guide](#installation-guide)
+  - [Project structure](#project-structure)
+  - [Getting started](#getting-started)
+- [Features](#features)
+- [Demo](#demo)
+
 ## Description
 
 Attendance Manager is a platform that simplifies attendance taking for students aswell as for teachers. It is a centralized platform that allows teachers to create sessions and let the students mark their attendance on their own.
