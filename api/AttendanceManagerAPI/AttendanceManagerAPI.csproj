@@ -27,10 +27,12 @@
 		<None Remove="Models\Course\" />
 		<None Remove="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
 		<None Remove="BCrypt.Net-Next" />
+		<None Remove="Models\Context\" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Controllers\" />
 		<Folder Include="Models\Session\" />
 		<Folder Include="Models\Course\" />
+		<Folder Include="Models\Context\" />
 	</ItemGroup>
 </Project>

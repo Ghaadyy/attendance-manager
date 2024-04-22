@@ -41,7 +41,7 @@ public partial class CoursesController : ControllerBase
 
             User? user = _userRepository.GetUserById(userId.Value);
 
-            if (user is null) return BadRequest();
+            if (user is null) return NotFound("User not found.");
 
             return Ok(_courseRepository.GetCoursesByUser(user));
         }
@@ -53,7 +53,7 @@ public partial class CoursesController : ControllerBase
     {
         var course = _courseRepository.GetCourse(courseId);
 
-        if (course is null) return BadRequest();
+        if (course is null) return NotFound("Course not found.");
 
         return Ok(course);
     }
@@ -66,12 +66,12 @@ public partial class CoursesController : ControllerBase
         if (pageIndex is null || pageSize is null)
         {
             course = _courseRepository.GetCourse(courseId);
-            if (course is null) return BadRequest("Course not found");
+            if (course is null) return NotFound("Course not found");
             else return BadRequest("Invalid query parameters");
         }
 
         course = _courseRepository.GetCourse(courseId);
-        if (course is null) return BadRequest("Course not found");
+        if (course is null) return NotFound("Course not found");
 
         return Ok(new PaginatedUserList
         {
@@ -87,7 +87,7 @@ public partial class CoursesController : ControllerBase
         if (pageIndex is null || pageSize is null)
         {
             var course = _courseRepository.GetCourse(courseId);
-            if (course is null) return BadRequest("Course not found");
+            if (course is null) return NotFound("Course not found");
             else return BadRequest("Invalid query parameters");
         }
 
@@ -98,7 +98,6 @@ public partial class CoursesController : ControllerBase
         });
     }
 
-    // ADD TEACHER HERE ALSO
     [HttpPost]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> CreateCourse([FromBody] CreateCourseModel model)
@@ -185,12 +184,12 @@ public partial class CoursesController : ControllerBase
         if (pageIndex is null || pageSize is null)
         {
             course = _courseRepository.GetCourse(courseId);
-            if (course is null) return BadRequest("Course not found");
+            if (course is null) return NotFound("Course not found");
             else return BadRequest("Invalid query parameters");
         }
 
         course = _courseRepository.GetCourse(courseId);
-        if (course is null) return BadRequest("Course not found");
+        if (course is null) return NotFound("Course not found");
 
         return Ok(new PaginatedUserList
         {
@@ -215,7 +214,7 @@ public partial class CoursesController : ControllerBase
     {
         var course = _courseRepository.GetCourse(courseId);
 
-        if (course is null) return NotFound();
+        if (course is null) return NotFound("Course not found");
 
         await _courseRepository.DeleteCourse(course);
 
