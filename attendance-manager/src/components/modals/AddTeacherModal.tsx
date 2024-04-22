@@ -20,12 +20,12 @@ function AddTeacherModal({ courseId, onCreate }: AddTeacherModalProps) {
   const submitHandler = async () => {
     if (username === "") {
       toast.error("Username required", {
-        toastId: 400
+        toastId: 400,
       });
       return;
     }
     await fetch(
-      `${process.env.REACT_APP_API_URL}/courses/${courseId}/teacher/${username}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/teachers/${username}`,
       {
         method: "PATCH",
         headers: {

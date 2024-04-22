@@ -26,7 +26,7 @@ function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
 
   const handleDelete = async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_API_URL}/courses/${courseId}/student/${studentId}`,
+      `${process.env.REACT_APP_API_URL}/courses/${courseId}/students/${studentId}`,
       {
         method: "DELETE",
         headers: {
@@ -34,18 +34,20 @@ function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
           Authorization: "Bearer " + token,
         },
       }
-    ).then(async (res) => {
-      if (res.ok) {
-        onDelete(studentId);
-        toast.success("Student removed successfully", {
-          toastId: res.status,
-        });
-      } else {
-        toast.error("Could not remove student", {
-          toastId: res.status,
-        });
-      }
-    }).catch((err) => console.log(err));
+    )
+      .then(async (res) => {
+        if (res.ok) {
+          onDelete(studentId);
+          toast.success("Student removed successfully", {
+            toastId: res.status,
+          });
+        } else {
+          toast.error("Could not remove student", {
+            toastId: res.status,
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -86,20 +88,22 @@ function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
           <span className="text-sm text-gray-500">{bloodType ?? "N/A"}</span>
         </div>
       </td>
-      {(userCtx?.user?.roles?.includes("Administrator") || userCtx?.user?.roles?.includes("Teacher")) &&
-      <td className="size-px whitespace-nowrap">
-        <div className="px-6 py-1.5">
-          <div className="inline-flex rounded-lg shadow-sm">
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              Remove
-            </button>
+      {(userCtx?.user?.roles?.includes("Administrator") ||
+        userCtx?.user?.roles?.includes("Teacher")) && (
+        <td className="size-px whitespace-nowrap">
+          <div className="px-6 py-1.5">
+            <div className="inline-flex rounded-lg shadow-sm">
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="py-2 px-3 inline-flex justify-center items-center gap-2 -ms-px first:rounded-s-lg first:ms-0 last:rounded-e-lg text-sm font-medium focus:z-10 border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                Remove
+              </button>
+            </div>
           </div>
-        </div>
-      </td>}
+        </td>
+      )}
     </tr>
   );
 }
