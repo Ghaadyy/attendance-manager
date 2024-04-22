@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import BasicInput from "../components/inputs/BasicInput";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useContext } from "react";
 import { userContext } from "../store/UserContext";
@@ -25,7 +24,7 @@ function Signup() {
   const userCtx = useContext(userContext);
 
   const submitHandler: SubmitHandler<Inputs> = async (data) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/users/signup`, {
+    await fetch(`${process.env.REACT_APP_API_URL}/users/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,7 +52,7 @@ function Signup() {
                   userCtx.setUser(data);
                   userCtx.setToken(token);
                   localStorage.setItem("token", token);
-                  navigate("/");
+                  navigate("/courses");
                 })
               )
               .catch((err) => console.log(err));
@@ -118,11 +117,12 @@ function Signup() {
                       This field is required
                     </span>
                   )}
-                  {errors.firstname && errors.firstname.type === "minLength" && (
-                    <span className="text-xs text-red-400 ml-2">
-                      First name must be at least 3 characters long
-                    </span>
-                  )}
+                  {errors.firstname &&
+                    errors.firstname.type === "minLength" && (
+                      <span className="text-xs text-red-400 ml-2">
+                        First name must be at least 3 characters long
+                      </span>
+                    )}
                 </div>
                 <div className="relative">
                   <input

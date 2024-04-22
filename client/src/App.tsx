@@ -13,7 +13,6 @@ import "./App.css";
 import RootLayout from "./layouts/RootLayout";
 import Account from "./pages/Account";
 import Courses from "./pages/Courses";
-import Dashboard from "./pages/Dashboard";
 import Course from "./pages/Course";
 import Users from "./pages/Users";
 import CreateCourse from "./pages/CreateCourse";
@@ -42,8 +41,8 @@ function App() {
     const storedToken = localStorage.getItem("token");
 
     if (storedToken) {
-      const decodedToken : any = jwtDecode(storedToken);
-      
+      const decodedToken: any = jwtDecode(storedToken);
+
       const { exp } = decodedToken;
       setToken(storedToken);
 
@@ -58,15 +57,20 @@ function App() {
             "Content-Type": "application/json",
             Authorization: "Bearer " + storedToken,
           },
-        }).then((res) =>
-          res.json().then((data) => {
-            const user_data: User = {
-              ...data,
-              roles: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
-            };
-            setUser(user_data);
-          })
-        ).catch((err) => console.log(err));
+        })
+          .then((res) =>
+            res.json().then((data) => {
+              const user_data: User = {
+                ...data,
+                roles:
+                  decodedToken[
+                    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                  ],
+              };
+              setUser(user_data);
+            })
+          )
+          .catch((err) => console.log(err));
       }
     }
   }, []);
@@ -83,7 +87,7 @@ function App() {
       children: [
         {
           path: "",
-          element: <Dashboard />,
+          element: <Navigate replace to="/courses" />,
         },
         {
           path: "account",
