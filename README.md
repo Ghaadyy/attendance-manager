@@ -83,6 +83,12 @@ dotnet run
 Congrats, you should be up and running!
 The React app should be available at `http://localhost:3000/ ` and the API at `http://localhost:8000/api/[controller]`.
 
+## Database Design
+
+Below is the _ER diagram_ that represents our database structure.
+
+![ER Diagram](./assets/er-diagram.png)
+
 ## Features
 
 Our app contains the following features:
@@ -98,3 +104,23 @@ Our app contains the following features:
 - Using Swagger to document the API.
 
 ## Demo
+
+Here you can find more about the core screens that are available in the app.
+
+Here you can find the main screen of the app, the courses page, where each user can see the courses he is enrolled in, or teaching.
+![Couress Page](./assets/courses.png)
+
+This page offers more details for each course allowing the teacher for example to create a session and take attendance.
+![Couress Page](./assets/course.png)
+
+Here is the session page, where the teacher can track the students' attendance to this specific session.
+![Couress Page](./assets/attendance.png)
+
+This is the QR code that the teacher shows to the students to allow them to mark their attendance.
+![Couress Page](./assets/qr.png)
+
+This is a simple page that allows users to edit their profile.
+![Couress Page](./assets/profile.png)
+
+This is our Swagger page, basically a documentation for our API.
+![Couress Page](./assets/swagger.png)
