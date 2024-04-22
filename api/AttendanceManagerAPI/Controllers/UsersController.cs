@@ -53,7 +53,7 @@ public class UsersController : ControllerBase
     {
         var user = _userRepository.GetUserById(userId);
 
-        if (user is null) return NotFound();
+        if (user is null) return NotFound("User not found");
 
         return Ok(user);
     }
@@ -67,7 +67,7 @@ public class UsersController : ControllerBase
 
         User? user = _userRepository.GetUserById((int)userId);
 
-        if (user is null) return BadRequest("User not found");
+        if (user is null) return NotFound("User not found");
 
         return Ok(user);
     }
@@ -77,10 +77,10 @@ public class UsersController : ControllerBase
     {
         var user = _userRepository.GetByEmail(model.Email);
 
-        if (user is null) return BadRequest("Invalid email.");
+        if (user is null) return NotFound("Invalid email.");
 
         if (!BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
-            return BadRequest("Invalid password.");
+            return NotFound("Invalid password.");
 
         var roles = _userRepository.GetUserRoles(user);
 
@@ -131,7 +131,7 @@ public class UsersController : ControllerBase
     {
         User? user = _userRepository.GetUserById(userId);
 
-        if (user is null) return BadRequest("Invalid user id.");
+        if (user is null) return NotFound("Invalid user id.");
 
         patchDoc.ApplyTo(user);
 
@@ -156,7 +156,7 @@ public class UsersController : ControllerBase
 
         User? user = _userRepository.GetUserById((int)userId);
 
-        if (user is null) return BadRequest("Invalid user id.");
+        if (user is null) return NotFound("Invalid user id.");
 
         patchDoc.ApplyTo(user);
 
@@ -182,7 +182,7 @@ public class UsersController : ControllerBase
 
         await _userRepository.DeleteUser(user);
 
-        return user;
+        return Ok(user);
     }
 
     [HttpPatch("{userEmail}/{roleName}")]

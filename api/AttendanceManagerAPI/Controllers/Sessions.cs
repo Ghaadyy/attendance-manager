@@ -73,7 +73,7 @@ public partial class CoursesController : ControllerBase
     {
         var session = _sessionRepository.GetSession(sessionId);
 
-        if (session is null) return NotFound();
+        if (session is null) return NotFound("Session not found.");
 
         await _sessionRepository.DeleteSession(session);
 
