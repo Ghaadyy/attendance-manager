@@ -52,7 +52,7 @@ function SessionTableRow({ session, onDelete }: TableRowProps) {
 
   useEffect(() => {
     fetch(
-      `${process.env.REACT_APP_API_URL}/courses/${session.courseId}/sessions/${session.id}/students`,
+      `${process.env.REACT_APP_API_URL}/courses/${session.courseId}/sessions/${session.id}/students/all`,
       {
         method: "GET",
         headers: {

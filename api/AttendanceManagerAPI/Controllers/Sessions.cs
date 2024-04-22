@@ -54,6 +54,16 @@ public partial class CoursesController : ControllerBase
     }
 
     /// <summary>
+    /// Get all the students that attended a specific session.
+    /// </summary>
+    [HttpGet("{courseId}/sessions/{sessionId}/students/all")]
+    [Authorize(Policy = "TeacherOrStudent")]
+    public ActionResult<PaginatedList<AttendanceUser>> GetSessionStudents(int sessionId)
+    {
+        return Ok(_sessionRepository.GetStudents(sessionId));
+    }
+
+    /// <summary>
     /// Retrieve information about a specific session.
     /// </summary>
     [HttpGet("{courseId}/sessions/{sessionId}")]
