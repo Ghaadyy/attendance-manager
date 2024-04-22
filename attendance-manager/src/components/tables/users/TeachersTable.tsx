@@ -26,7 +26,7 @@ function TeachersTable({ courseId }: { courseId: number }) {
     )
       .then((res) =>
         res.json().then((data) => {
-          const { users, hasMore } = data;
+          const { list: users, hasMore } = data;
           setUsers(users);
           setHasMore(hasMore);
         })
@@ -114,10 +114,7 @@ function TeachersTable({ courseId }: { courseId: number }) {
 
                   <tbody className="divide-y divide-gray-200">
                     {users.map((user) => (
-                      <TeacherTableRow
-                        key={user.id}
-                        user={user}
-                      />
+                      <TeacherTableRow key={user.id} user={user} />
                     ))}
                   </tbody>
                 </table>

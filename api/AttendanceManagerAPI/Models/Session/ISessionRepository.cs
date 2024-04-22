@@ -12,7 +12,7 @@ public interface ISessionRepository
     Task AddSession(Session session);
     Task DeleteSession(Session session);
     IEnumerable<User> GetStudents(int sessionId);
-    PaginatedAttendanceUserList GetStudents(Session session, int pageIndex, int pageSize);
+    PaginatedList<AttendanceUser> GetStudents(Session session, int pageIndex, int pageSize);
     Task AddStudent(Session session, int studentId);
     bool CheckIfSessionValid(Session session);
     bool IsStudentPresent(int sessionId, int studentId);

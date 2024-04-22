@@ -11,8 +11,14 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace AttendanceManagerAPI.Controllers;
 
+/// <summary>
+/// Everything related to courses, sessions, teachers and students.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[ProducesResponseType(200)]
+[ProducesResponseType(404)]
+[ProducesResponseType(400)]
 public partial class CoursesController : ControllerBase
 {
     private readonly ICourseRepository _courseRepository;
@@ -28,6 +34,10 @@ public partial class CoursesController : ControllerBase
         _sessionRepository = sessionRepository;
     }
 
+    /// <summary>
+    /// Gets all the courses, depending on the user requesting them.
+    /// </summary>
+    /// <returns>A list of courses.</returns>
     [HttpGet]
     [Authorize]
     public ActionResult<IEnumerable<Course>> Get()
@@ -47,6 +57,10 @@ public partial class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retrieves information about a specific course.
+    /// </summary>
+    /// <returns>The requested course.</returns>
     [HttpGet("{courseId}")]
     [Authorize(Policy = "TeacherOrStudent")]
     public ActionResult<Course> Get(int courseId)
@@ -58,46 +72,32 @@ public partial class CoursesController : ControllerBase
         return Ok(course);
     }
 
+    /// <summary>
+    /// Get the students enrolled in a specific course.
+    /// </summary>
     [HttpGet("{courseId}/students")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public ActionResult<PaginatedUserList> GetStudents(int courseId, [FromQuery] int? pageSize, [FromQuery] int? pageIndex)
+    public ActionResult<PaginatedList<User>> GetStudents(int courseId, [FromQuery] int? pageSize, [FromQuery] int? pageIndex)
     {
-        Course? course;
+        Course? course = _courseRepository.GetCourse(courseId);
         if (pageIndex is null || pageSize is null)
         {
-            course = _courseRepository.GetCourse(courseId);
             if (course is null) return NotFound("Course not found");
             else return BadRequest("Invalid query parameters");
         }
 
-        course = _courseRepository.GetCourse(courseId);
         if (course is null) return NotFound("Course not found");
 
-        return Ok(new PaginatedUserList
+        return Ok(new PaginatedList<User>
         {
-            users = _userRepository.GetStudents(course, pageIndex.Value, pageSize.Value),
-            hasMore = _userRepository.HasMoreStudents(course, pageIndex.Value, pageSize.Value)
+            List = _userRepository.GetStudents(course, pageIndex.Value, pageSize.Value).ToList(),
+            HasMore = _userRepository.HasMoreStudents(course, pageIndex.Value, pageSize.Value)
         });
     }
 
-    [HttpGet("{courseId}/sessions")]
-    [Authorize(Policy = "TeacherOrStudent")]
-    public ActionResult<PaginatedSessionList> GetSessions(int courseId, [FromQuery] int? pageIndex, [FromQuery] int? pageSize)
-    {
-        if (pageIndex is null || pageSize is null)
-        {
-            var course = _courseRepository.GetCourse(courseId);
-            if (course is null) return NotFound("Course not found");
-            else return BadRequest("Invalid query parameters");
-        }
-
-        return Ok(new PaginatedSessionList
-        {
-            sessions = _sessionRepository.GetSessions(courseId, pageIndex.Value, pageSize.Value),
-            hasMore = _sessionRepository.HasMore(courseId, pageIndex.Value, pageSize.Value)
-        });
-    }
-
+    /// <summary>
+    /// Create a new course.
+    /// </summary>
     [HttpPost]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> CreateCourse([FromBody] CreateCourseModel model)
@@ -117,13 +117,15 @@ public partial class CoursesController : ControllerBase
         return Ok();
     }
 
-    [HttpPatch("{courseId}/student/{studentUsername}")]
+    /// <summary>
+    /// Add a student to the specified course.
+    /// </summary>
+    [HttpPatch("{courseId}/students/{studentUsername}")]
     [Authorize(Policy = "IsCourseTeacher")]
     public async Task<ActionResult<User>> AddStudent(int courseId, string studentUsername)
     {
         try
         {
-
             var user = _userRepository.GetByUserName(studentUsername);
             if (user is null) return NotFound("Student not found.");
             if (_userRepository.HasRole(user, "Student") is false) return BadRequest("User is not a Student");
@@ -138,7 +140,10 @@ public partial class CoursesController : ControllerBase
         }
     }
 
-    [HttpDelete("{courseId}/student/{studentId}")]
+    /// <summary>
+    /// Remove a student from the specified course.
+    /// </summary>
+    [HttpDelete("{courseId}/students/{studentId}")]
     [Authorize(Policy = "IsCourseTeacher")]
     public async Task<ActionResult<User>> RemoveStudent(int courseId, int studentId)
     {
@@ -156,7 +161,10 @@ public partial class CoursesController : ControllerBase
         }
     }
 
-    [HttpPatch("{courseId}/teacher/{teacherUsername}")]
+    /// <summary>
+    /// Add a teacher to the specified course.
+    /// </summary>
+    [HttpPatch("{courseId}/teachers/{teacherUsername}")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> AddTeacher(int courseId, string teacherUsername)
     {
@@ -176,9 +184,12 @@ public partial class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Get the teachers associated with a specific course.
+    /// </summary>
     [HttpGet("{courseId}/teachers")]
     [Authorize(Policy = "TeacherOrStudent")]
-    public ActionResult<PaginatedUserList> GetTeachers(int courseId, [FromQuery] int? pageSize, [FromQuery] int? pageIndex)
+    public ActionResult<PaginatedList<User>> GetTeachers(int courseId, [FromQuery] int? pageSize, [FromQuery] int? pageIndex)
     {
         Course? course;
         if (pageIndex is null || pageSize is null)
@@ -191,13 +202,16 @@ public partial class CoursesController : ControllerBase
         course = _courseRepository.GetCourse(courseId);
         if (course is null) return NotFound("Course not found");
 
-        return Ok(new PaginatedUserList
+        return Ok(new PaginatedList<User>
         {
-            users = _userRepository.GetTeachers(course, pageIndex.Value, pageSize.Value),
-            hasMore = _userRepository.HasMoreTeachers(course, pageIndex.Value, pageSize.Value)
+            List = _userRepository.GetTeachers(course, pageIndex.Value, pageSize.Value).ToList(),
+            HasMore = _userRepository.HasMoreTeachers(course, pageIndex.Value, pageSize.Value)
         });
     }
 
+    /// <summary>
+    /// Get all the teachers associated with a specific course.
+    /// </summary>
     [HttpGet("{courseId}/teachers/all")]
     [Authorize(Policy = "TeacherOrStudent")]
     public ActionResult<IEnumerable<User>> GetTeachers(int courseId)
@@ -208,6 +222,10 @@ public partial class CoursesController : ControllerBase
         return Ok(_courseRepository.GetTeachers(course.Id));
     }
 
+    /// <summary>
+    /// Delete a specific course.
+    /// </summary>
+    /// <returns>The deleted course.</returns>
     [HttpDelete("{courseId}")]
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<Course>> DeleteCourse(int courseId)

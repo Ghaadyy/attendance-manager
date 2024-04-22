@@ -16,8 +16,14 @@ using AttendanceManagerAPI.Models.Token;
 
 namespace AttendanceManagerAPI.Controllers;
 
+/// <summary>
+/// Everything related to user management and accounts.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[ProducesResponseType(200)]
+[ProducesResponseType(400)]
+[ProducesResponseType(404)]
 public class UsersController : ControllerBase
 {
     private readonly TokenGenerator generator;
@@ -31,22 +37,28 @@ public class UsersController : ControllerBase
         _tokenRepository = tokenRepository;
     }
 
+    /// <summary>
+    /// Retrieves all the users in the app.
+    /// </summary>
     [HttpGet]
     [Authorize(Roles = "Administrator")]
-    public ActionResult<PaginatedUserList> Get([FromQuery] int? pageIndex, [FromQuery] int? pageSize)
+    public ActionResult<PaginatedList<User>> Get([FromQuery] int? pageIndex, [FromQuery] int? pageSize)
     {
         if (pageIndex is null || pageSize is null)
-            return Ok(_userRepository.GetAllUsers());
+            return BadRequest("Please provide query parameters");
 
         var users = _userRepository.GetUsers(pageIndex.Value, pageSize.Value);
 
-        return Ok(new PaginatedUserList
+        return Ok(new PaginatedList<User>
         {
-            users = users,
-            hasMore = _userRepository.HasMore(pageIndex.Value, pageSize.Value)
+            List = users.ToList(),
+            HasMore = _userRepository.HasMore(pageIndex.Value, pageSize.Value)
         });
     }
 
+    /// <summary>
+    /// Retrieves a specific user.
+    /// </summary>
     [HttpGet("{userId}")]
     [Authorize(Roles = "Administrator")]
     public ActionResult<User> Get(int userId)
@@ -58,6 +70,9 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Retrieves information about the user who initiated the request.
+    /// </summary>
     [HttpGet("me")]
     [Authorize]
     public ActionResult<User> GetUserInfo()
@@ -72,6 +87,10 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Log into the app.
+    /// </summary>
+    /// <returns>A JSON Web Token.</returns>
     [HttpPost("login")]
     public ActionResult Login([FromBody] LoginModel model)
     {
@@ -89,7 +108,12 @@ public class UsersController : ControllerBase
         return Ok(new { token });
     }
 
+    /// <summary>
+    /// Create a new account.
+    /// </summary>
+    /// <returns>A JSON Web Token.</returns>
     [HttpPost("signup")]
+    [ProducesResponseType(500)]
     public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
     {
         if (!_userRepository.IsValidUserName(model.UserName))
@@ -125,6 +149,10 @@ public class UsersController : ControllerBase
         return Ok(new { token });
     }
 
+    /// <summary>
+    /// Update fields for a specific user.
+    /// </summary>
+    /// <returns>The updated user.</returns>
     [HttpPatch("{userId}")]
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<User>> Update(int userId, [FromBody] JsonPatchDocument<User> patchDoc)
@@ -147,6 +175,10 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Update specific fields for the user who initiated the request.
+    /// </summary>
+    /// <returns>The updated user.</returns>
     [HttpPatch]
     [Authorize]
     public async Task<ActionResult<User>> Update([FromBody] JsonPatchDocument<User> patchDoc)
@@ -172,6 +204,10 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Delete a user from the app.
+    /// </summary>
+    /// <returns>The deleted user.</returns>
     [HttpDelete("{userId}")]
     [Authorize(Roles = "Administrator")]
     public async Task<ActionResult<User>> Delete(int userId)
@@ -185,6 +221,9 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Add a role to a specific user.
+    /// </summary>
     [HttpPatch("{userEmail}/{roleName}")]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> AddRole(string userEmail, string roleName)

@@ -64,8 +64,7 @@ function StudentSessionTable({ courseId, sessionId }: TableProps) {
     )
       .then((res) =>
         res.json().then((data) => {
-          const { users, hasMore } = data;
-          console.log(users);
+          const { list: users, hasMore } = data;
           setUserData(users);
           setHasMore(hasMore);
         })

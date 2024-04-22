@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AttendanceManagerAPI.Models;
 
+/// <summary>
+/// Model that represents the Course.
+/// </summary>
 [Table("courses")]
 public class Course
 {

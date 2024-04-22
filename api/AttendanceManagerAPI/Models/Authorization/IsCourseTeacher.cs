@@ -6,11 +6,11 @@ using System.Security.Claims;
 
 namespace AttendanceManagerAPI.Models;
 
-public class IsCourseTeacher : IAuthorizationRequirement
+class IsCourseTeacher : IAuthorizationRequirement
 {
 }
 
-public class IsCourseTeacherHandler : AuthorizationHandler<IsCourseTeacher>
+class IsCourseTeacherHandler : AuthorizationHandler<IsCourseTeacher>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICourseRepository _courseRepository;

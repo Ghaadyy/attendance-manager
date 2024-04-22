@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Newtonsoft.Json;
 using AttendanceManagerAPI.Models.Token;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,15 +30,28 @@ builder.Services.AddScoped<IAuthorizationHandler, IsCourseTeacherHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    //options.SwaggerDoc("API", new OpenApiInfo
+    //{
+    //    Title = "Attendance Manager API",
+    //    Version = "1",
+    //    Contact = new OpenApiContact
+    //    {
+    //        Name = "Ghady Youssef",
+    //        Url = new Uri("https://github.com/Ghaadyy"),
+    //    }
+    //});
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+});
 
 builder.Services.AddCors();
 
 builder.Services.AddControllers()
-    .AddNewtonsoftJson(options =>
-    {
-        // options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-    })
+    .AddNewtonsoftJson()
     .AddXmlSerializerFormatters();
 
 builder.Services.Configure<MvcOptions>(opts =>

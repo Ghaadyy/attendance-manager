@@ -4,6 +4,6 @@ namespace AttendanceManagerAPI.Models.Token;
 
 public interface ITokenRepository
 {
-	int? GetIdFromToken(ClaimsPrincipal claim);
-	string? GetRoleFromToken(ClaimsPrincipal claim);
+    int? GetIdFromToken(ClaimsPrincipal claim);
+    string? GetRoleFromToken(ClaimsPrincipal claim);
 }

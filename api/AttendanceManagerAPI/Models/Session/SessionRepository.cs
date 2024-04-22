@@ -103,7 +103,7 @@ public class SessionRepository : ISessionRepository
         return true;
     }
 
-    public PaginatedAttendanceUserList GetStudents(Session session, int pageIndex, int pageSize)
+    public PaginatedList<AttendanceUser> GetStudents(Session session, int pageIndex, int pageSize)
     {
         var students = GetStudents(session.Id).ToList();
         var courseStudents = _courseRepository.GetStudents(session.CourseId).ToList();
@@ -118,9 +118,9 @@ public class SessionRepository : ISessionRepository
                               };
 
 
-        return new PaginatedAttendanceUserList
+        return new PaginatedList<AttendanceUser>
         {
-            Users = sessionStudents.Skip((pageIndex - 1) * pageSize).Take(pageSize),
+            List = sessionStudents.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList(),
             HasMore = HasMoreStudents(session.CourseId, pageIndex, pageSize),
         };
     }

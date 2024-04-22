@@ -26,7 +26,7 @@ function StudentsTable({ courseId }: { courseId: number }) {
     )
       .then((res) =>
         res.json().then((data) => {
-          const { users, hasMore } = data;
+          const { list: users, hasMore } = data;
           setUsers(users);
           setHasMore(hasMore);
         })
@@ -63,33 +63,35 @@ function StudentsTable({ courseId }: { courseId: number }) {
                     </p>
                   </div>
 
-                  {(user?.roles?.includes("Administrator") || user?.roles?.includes("Teacher")) &&
-                  <div>
-                    <div className="inline-flex gap-x-2">
-                      <button
-                        className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
-                        type="button"
-                        data-hs-overlay="#add-student-modal"
-                      >
-                        <svg
-                          className="flex-shrink-0 size-4"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                  {(user?.roles?.includes("Administrator") ||
+                    user?.roles?.includes("Teacher")) && (
+                    <div>
+                      <div className="inline-flex gap-x-2">
+                        <button
+                          className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                          type="button"
+                          data-hs-overlay="#add-student-modal"
                         >
-                          <path d="M5 12h14" />
-                          <path d="M12 5v14" />
-                        </svg>
-                        Add student
-                      </button>
+                          <svg
+                            className="flex-shrink-0 size-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M5 12h14" />
+                            <path d="M12 5v14" />
+                          </svg>
+                          Add student
+                        </button>
+                      </div>
                     </div>
-                  </div>}
+                  )}
                 </div>
                 {/* <!-- End Header --> */}
 

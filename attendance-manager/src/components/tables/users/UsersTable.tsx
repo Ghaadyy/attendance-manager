@@ -26,7 +26,7 @@ function UsersTable() {
     )
       .then((res) =>
         res.json().then((data) => {
-          const { users, hasMore } = data;
+          const { list: users, hasMore } = data;
           setUsers(users);
           setHasMore(hasMore);
         })
@@ -39,7 +39,7 @@ function UsersTable() {
 
   return (
     <>
-    <AddUserModal />
+      <AddUserModal />
       {/* <!-- Table Section --> */}
       <div className="max-w-[85rem] px-4 py-10 mx-auto">
         {/* <!-- Card --> */}

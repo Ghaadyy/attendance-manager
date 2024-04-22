@@ -33,7 +33,7 @@ function SessionsTable({ courseId }: TableProps) {
     )
       .then((res) =>
         res.json().then((data) => {
-          const { sessions, hasMore } = data;
+          const { list: sessions, hasMore } = data;
           setSessions(sessions);
           setHasMore(hasMore);
         })
