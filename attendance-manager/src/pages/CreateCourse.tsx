@@ -7,7 +7,7 @@ function CreateCourse() {
   const [description, setDescription] = useState<string>("");
 
   const { token } = useContext(userContext);
-  
+
   const resetForms = () => {
     setName("");
     setDescription("");
@@ -16,7 +16,7 @@ function CreateCourse() {
   const submitHandler: React.FormEventHandler<HTMLFormElement> = (ev) => {
     ev.preventDefault();
 
-    if(name === "" || description === "") {
+    if (name === "" || description === "") {
       toast.warning("Empty input detected", {
         toastId: 400,
       });
@@ -33,18 +33,20 @@ function CreateCourse() {
         name,
         description,
       }),
-    }).then(async (res) => {
-      if(res.ok){
-        resetForms();
-        toast.success("Course created", {
-          toastId: res.status,
-        });
-      }else {
-        toast.error(await res.text(), {
-          toastId: 401,
-        });
-      }
-    }).catch((err) => console.log(err));
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          resetForms();
+          toast.success("Course created", {
+            toastId: res.status,
+          });
+        } else {
+          toast.error(await res.text(), {
+            toastId: 401,
+          });
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -85,7 +87,7 @@ function CreateCourse() {
                 className="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                 rows={6}
                 required
-                placeholder="A detailed summary will better explain your products to the audiences. Our users will see this in your dedicated product page."
+                placeholder="A detailed summary about the course's contents."
                 value={description}
                 onChange={(ev) => setDescription(ev.target.value)}
               ></textarea>
