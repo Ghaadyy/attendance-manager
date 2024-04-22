@@ -89,7 +89,7 @@ function Signup() {
               <div className="grid gap-y-4">
                 <div className="relative">
                   <input
-                    {...register("firstname", { required: true })}
+                    {...register("firstname", { required: true, minLength: 3 })}
                     type="text"
                     id="firstname"
                     className="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
@@ -113,15 +113,20 @@ function Signup() {
                   >
                     First Name
                   </label>
-                  {errors.firstname && (
+                  {errors.firstname && errors.firstname.type === "required" && (
                     <span className="text-xs text-red-400 ml-2">
                       This field is required
+                    </span>
+                  )}
+                  {errors.firstname && errors.firstname.type === "minLength" && (
+                    <span className="text-xs text-red-400 ml-2">
+                      First name must be at least 3 characters long
                     </span>
                   )}
                 </div>
                 <div className="relative">
                   <input
-                    {...register("lastname", { required: true })}
+                    {...register("lastname", { required: true, minLength: 3 })}
                     type="text"
                     id="lastname"
                     className="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
@@ -134,7 +139,7 @@ function Signup() {
                     placeholder="Doe"
                   />
                   <label
-                    htmlFor="email"
+                    htmlFor="lastname"
                     className="absolute top-0 start-0 p-4 h-full text-sm truncate pointer-events-none transition ease-in-out duration-100 border border-transparent peer-disabled:opacity-50 peer-disabled:pointer-events-none
                       peer-focus:text-xs
                       peer-focus:-translate-y-1.5
@@ -145,15 +150,20 @@ function Signup() {
                   >
                     Last Name
                   </label>
-                  {errors.lastname && (
+                  {errors.lastname && errors.lastname.type === "required" && (
                     <span className="text-xs text-red-400 ml-2">
                       This field is required
+                    </span>
+                  )}
+                  {errors.lastname && errors.lastname.type === "minLength" && (
+                    <span className="text-xs text-red-400 ml-2">
+                      Last name must be at least 3 characters long
                     </span>
                   )}
                 </div>
                 <div className="relative">
                   <input
-                    {...register("username", { required: true })}
+                    {...register("username", { required: true, minLength: 3 })}
                     type="text"
                     id="username"
                     className="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
@@ -177,9 +187,14 @@ function Signup() {
                   >
                     Username
                   </label>
-                  {errors.username && (
+                  {errors.username && errors.username.type === "required" && (
                     <span className="text-xs text-red-400 ml-2">
                       This field is required
+                    </span>
+                  )}
+                  {errors.username && errors.username.type === "minLength" && (
+                    <span className="text-xs text-red-400 ml-2">
+                      Username must be at least 3 characters long
                     </span>
                   )}
                 </div>
@@ -217,7 +232,7 @@ function Signup() {
                 </div>
                 <div className="relative">
                   <input
-                    {...register("password", { required: true })}
+                    {...register("password", { required: true, minLength: 6 })}
                     type="password"
                     id="password"
                     className="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
@@ -241,9 +256,14 @@ function Signup() {
                   >
                     Password
                   </label>
-                  {errors.password && (
+                  {errors.password && errors.password.type === "required" && (
                     <span className="text-xs text-red-400 ml-2">
                       This field is required
+                    </span>
+                  )}
+                  {errors.password && errors.password.type === "minLength" && (
+                    <span className="text-xs text-red-400 ml-2">
+                      Password must be at least 6 characters long
                     </span>
                   )}
                 </div>

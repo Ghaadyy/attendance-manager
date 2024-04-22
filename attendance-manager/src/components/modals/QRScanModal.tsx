@@ -57,17 +57,17 @@ function QRScanModal({
                     headers: {
                       Authorization: "Bearer " + token,
                     },
-                  });
-
-                  if (res.ok) {
-                    toast.success("Marked as present!", {
-                      toastId: res.status,
-                    });
-                  } else {
-                    toast.error(await res.text(), {
-                      toastId: res.status,
-                    });
-                  }
+                  }).then(async (res) => {
+                      if (res.ok) {
+                        toast.success("Marked as present!", {
+                          toastId: res.status,
+                        });
+                      } else {
+                        toast.error(await res.text(), {
+                          toastId: res.status,
+                        });
+                      }
+                  }).catch((err) => console.log(err));
                 }}
                 //onError={(error) => toast.error(error.message)}
               />

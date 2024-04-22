@@ -66,7 +66,7 @@ function App() {
             };
             setUser(user_data);
           })
-        );
+        ).catch((err) => console.log(err));
       }
     }
   }, []);

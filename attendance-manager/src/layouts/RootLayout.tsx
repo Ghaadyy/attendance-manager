@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import NavItem from "../components/navigation/NavItem";
 import Avatar from "../components/avatars/Avatar";
@@ -10,8 +10,13 @@ function RootLayout() {
 
   const { user } = useContext(userContext);
 
+  const [pageName, setPageName] = useState("");
+
   useEffect(() => {
     window.HSStaticMethods.autoInit();
+    const pathname = location.pathname;
+    const trimmedPathname = pathname.replace("/", "");
+    setPageName(trimmedPathname === "" ? "Dashboard" : trimmedPathname);
   }, [location.pathname]);
 
   return (
@@ -158,7 +163,7 @@ function RootLayout() {
               className="text-sm font-semibold text-gray-800 truncate"
               aria-current="page"
             >
-              Dashboard
+              {pageName}
             </li>
           </ol>
         </div>

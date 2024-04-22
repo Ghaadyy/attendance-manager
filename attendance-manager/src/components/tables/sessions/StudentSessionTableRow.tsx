@@ -77,19 +77,19 @@ function StudentSessionTableRow({
           Authorization: "Bearer " + token,
         },
       }
-    );
-
-    if (res.ok) {
-      toast.success("Marked as present!", {
-        toastId: res.status,
-      });
-      setStatus(true);
-    } else {
-      toast.error(await res.text(), {
-        toastId: res.status,
-      });
-      setStatus(false);
-    }
+    ).then(async (res) => {
+      if (res.ok) {
+        toast.success("Marked as present!", {
+          toastId: res.status,
+        });
+        setStatus(true);
+      } else {
+        toast.error(await res.text(), {
+          toastId: res.status,
+        });
+        setStatus(false);
+      }
+    }).catch((err) => console.log(err));
   };
 
   return (

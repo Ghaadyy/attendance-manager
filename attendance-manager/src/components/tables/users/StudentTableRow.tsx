@@ -34,18 +34,18 @@ function StudentTableRow({ user, onDelete, courseId }: TableRowProps) {
           Authorization: "Bearer " + token,
         },
       }
-    );
-
-    if (res.ok) {
-      onDelete(studentId);
-      toast.success("Student removed successfully", {
-        toastId: res.status,
-      });
-    } else {
-      toast.error("Could not remove student", {
-        toastId: res.status,
-      });
-    }
+    ).then(async (res) => {
+      if (res.ok) {
+        onDelete(studentId);
+        toast.success("Student removed successfully", {
+          toastId: res.status,
+        });
+      } else {
+        toast.error("Could not remove student", {
+          toastId: res.status,
+        });
+      }
+    }).catch((err) => console.log(err));
   };
 
   return (

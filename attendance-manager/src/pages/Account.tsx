@@ -3,6 +3,8 @@ import { userContext } from "../store/UserContext";
 import { Link } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+import { User } from "../models/User";
 
 type Inputs = {
   email: string;
@@ -41,12 +43,17 @@ function Account() {
       ),
     })
       .then(async (res) => {
-        if (res.ok) {
+        if (res.ok && token) {
+          const decodedToken : any = jwtDecode(token);
           toast.success("Changes saved", {
             toastId: res.status,
           });
-          const user = await res.json();
-          setUser(user);
+          const _user = await res.json();
+          const user_data: User = {
+            ..._user,
+            roles: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+          };
+          setUser(user_data);
         } else {
           toast.error("Could not save changes", {
             toastId: res.status,

@@ -24,6 +24,13 @@ function CreateSessionModal({ courseId, onCreate }: CreateSessionModalProps) {
   };
 
   const submitHandler = async () => {
+    if (name === "" || description === "" ||
+        startDate === "" || endDate === ""
+    ) {
+      toast.warning("Empty input detected", {
+        toastId: 400
+      });
+    }
     await fetch(`${process.env.REACT_APP_API_URL}/courses/${courseId}/sessions`, {
       method: "POST",
       headers: {

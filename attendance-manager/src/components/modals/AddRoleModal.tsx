@@ -15,7 +15,7 @@ function AddUserModal() {
 
   const submitHandler = async () => {
     if(email === "" || role === "") {
-        toast.error("Bad Request", {
+        toast.error("Fill in the required fields", {
             toastId: 400,
         });
         return;

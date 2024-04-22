@@ -125,7 +125,7 @@ function Login() {
                 </div>
                 <div className="relative">
                   <input
-                    {...register("password", { required: true })}
+                    {...register("password", { required: true, minLength: 6 })}
                     type="password"
                     id="password"
                     className="peer p-4 block w-full border-gray-200 rounded-lg text-sm placeholder:text-transparent focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none
@@ -149,9 +149,14 @@ function Login() {
                   >
                     Password
                   </label>
-                  {errors.password && (
+                  {errors.password && errors.password.type === "required" && (
                     <span className="text-xs text-red-400 ml-2">
                       This field is required
+                    </span>
+                  )}
+                  {errors.password && errors.password.type === "minLength" && (
+                    <span className="text-xs text-red-400 ml-2">
+                      Password must be at least 6 characters long
                     </span>
                   )}
                 </div>
